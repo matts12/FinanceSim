@@ -14,12 +14,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace FinanceSim {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
 	public partial class MainWindow : Window {
+		//members
+		//constructors
 		public MainWindow() {
 			InitializeComponent();
 		}
+		//methods
 	}
 }
