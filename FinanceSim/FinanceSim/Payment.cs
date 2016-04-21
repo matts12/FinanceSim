@@ -31,7 +31,6 @@ namespace FinanceSim {
 		}
 		//methods
 		internal override bool IsDue(DateTime day) {
-			//TODO
 			switch (Freq) {
 				case Frequency.YEARLY: return day.DayOfYear == refTime.DayOfYear;
 				case Frequency.MONTHLY_DAY: return day.Day == refTime.Day;
@@ -73,9 +72,9 @@ namespace FinanceSim {
 		private Random rand;
 		//constructors
 		internal UncertainPayment(string name, Frequency freq, int times, DateTime month, Random rand) : base(name, freq) {
-			RandomizeTimes(times, month);
 			this.rand = rand;
 			currRand = 0;
+			RandomizeTimes(times, month);
 		}
 		//properties
 		protected Random Rand { get { return rand; } }
@@ -84,7 +83,6 @@ namespace FinanceSim {
 			randTimes = new int[times];
 			int upperBound = -1, lowerBound = 1;
 			switch (Freq) {
-				//TODO
 				case Frequency.YEARLY:
 					upperBound = DateTime.IsLeapYear(month.Year) ? 366 : 365;
 					break;
@@ -107,13 +105,13 @@ namespace FinanceSim {
 			Array.Sort(randTimes);
 		}
 		internal override bool IsDue(DateTime day) {
-			bool isDue = true;
+			bool isDue = false;
 			switch (Freq) {
 				case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; break;
 				case Frequency.MONTHLY_DAY: isDue = day.Day == randTimes[currRand]; break;
 				case Frequency.WEEKLY: isDue = (int)day.DayOfWeek == randTimes[currRand]; break;
 			}
-			if (isDue && currRand < randTimes.Length) {
+			if (isDue && currRand + 1 < randTimes.Length) {
 				currRand++;
 			}
 			return isDue;

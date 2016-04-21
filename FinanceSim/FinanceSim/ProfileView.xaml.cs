@@ -9,27 +9,22 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace FinanceSim {
-	public partial class MainWindow : Window {
+	public partial class ProfileView : Page {
 		//members
-		private List<Payment> payments;
-		private Page[] contents;
+		private MainWindow parent;
 		//constructors
-		public MainWindow() {
+		public ProfileView(MainWindow parent) {
 			InitializeComponent();
-			contents = new Page[] { new ProfileView(this), new DataView(this) };
-			payments = new List<Payment>();
-			payments.Add(new UncertainRandomPayment("fee", Frequency.WEEKLY, 40.0m, 5.0m, new Random(), 2, DateTime.Now));
-			ChangeContent(0);
+			this.parent = parent;
 		}
 		//methods
-		internal void ChangeContent(int i) {
-			Content = contents[i];
+		private void p_goButton_Click(object sender, RoutedEventArgs e) {
+			parent.ChangeContent(1);
 		}
 	}
 }
