@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="DataView">
-    <Grid Name="dv_dataViewGrid">
+    <Grid Name="mainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="5"/>
@@ -16,12 +16,12 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Name="dv_profilePanel" Grid.Column="0" Background="Aqua">
+        <StackPanel Name="profilePanel" Grid.Column="0" Background="Aqua">
 
         </StackPanel>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-        <StackPanel Name="dv_rightPanel"  Grid.Column="2" Background="Chocolate">
-            <Label Name="dv_dateLabel"/>
+        <DockPanel Name="rightPanel"  Grid.Column="2" Background="Chocolate">
+            <Label Name="dateLabel"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
@@ -31,14 +31,16 @@
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <StackPanel Name="dv_expensesPanel" Grid.Column="0" Background="Yellow">
-
-                </StackPanel>
+                <DockPanel Name="expensesPanel" Grid.Column="0" Background="Yellow">
+                    <Label>aksdfksl</Label>
+                </DockPanel>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-                <StackPanel Name="dv_innerRightPanel" Grid.Column="2">
+                <DockPanel Name="innerRightPanel" Grid.Column="2">
+                    <UniformGrid Name="calendarGrid" Columns="7" Rows="6" Background="Peru"/>
 
-                </StackPanel>
+
+                </DockPanel>
             </Grid>
-        </StackPanel>
+        </DockPanel>
     </Grid>
 </Page>

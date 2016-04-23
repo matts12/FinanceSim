@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="ProfileView">
-    <DockPanel Name="p_profilePanel" HorizontalAlignment="Stretch" Background="Black">
-        <Button Name="p_goButton" Click="p_goButton_Click">skdfskldf</Button>
+    <DockPanel Name="mainPanel">
+        <Button Name="goButton" Click="p_goButton_Click">skdfskldf</Button>
     </DockPanel>
 </Page>
