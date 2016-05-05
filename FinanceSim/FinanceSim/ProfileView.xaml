@@ -9,5 +9,8 @@
       Title="ProfileView">
     <DockPanel Name="mainPanel">
         <Button Name="goButton" Click="p_goButton_Click">skdfskldf</Button>
+		<TextBox Name="firstNameIn"/>
+		<TextBox Name="lastNameIn"/>
+		<DatePickerTextBox Name="desiredDateIn"/>
     </DockPanel>
 </Page>

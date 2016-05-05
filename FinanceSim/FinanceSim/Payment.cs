@@ -20,7 +20,12 @@ namespace FinanceSim {
 		//methods
 		internal abstract decimal GetPayment();
 		internal abstract bool IsDue(DateTime day);
-		
+		//statics
+		internal static List<Payment> GeneratePayments(Profile profile) {
+			//TODO
+			List<Payment> payments = new List<Payment>();
+			return payments;
+		}
 	}
 	abstract class CertainPayment : Payment {
 		//members
