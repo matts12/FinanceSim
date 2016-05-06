@@ -6,6 +6,7 @@ using System.Text;
 namespace FinanceSim {
 	enum Frequency { YEARLY, MONTHLY_DAY, WEEKLY }
 	abstract class Payment {
+		private static Random rand = new Random();
 		//members
 		private string name;
 		private Frequency freq;
@@ -24,6 +25,8 @@ namespace FinanceSim {
 		internal static List<Payment> GeneratePayments(Profile profile) {
 			//TODO
 			List<Payment> payments = new List<Payment>();
+			payments.Add(new CertainFixedPayment("Health care", 500, Frequency.MONTHLY_DAY, new DateTime(2016, 5, 7)));
+			payments.Add(new UncertainRandomPayment("Broken stuff", Frequency.WEEKLY, 5.00m, 10.00m, rand, 4, DateTime.Today));
 			return payments;
 		}
 	}
@@ -75,24 +78,26 @@ namespace FinanceSim {
 		private int[] randTimes;
 		private int currRand;
 		private Random rand;
+		private bool needNewValues;
 		//constructors
 		internal UncertainPayment(string name, Frequency freq, int times, DateTime month, Random rand) : base(name, freq) {
 			this.rand = rand;
 			currRand = 0;
+			needNewValues = false;
 			RandomizeTimes(times, month);
 		}
 		//properties
 		protected Random Rand { get { return rand; } }
 		//methods
-		protected void RandomizeTimes(int times, DateTime month) {
+		protected void RandomizeTimes(int times, DateTime refTime) {
 			randTimes = new int[times];
 			int upperBound = -1, lowerBound = 1;
 			switch (Freq) {
 				case Frequency.YEARLY:
-					upperBound = DateTime.IsLeapYear(month.Year) ? 366 : 365;
+					upperBound = DateTime.IsLeapYear(refTime.Year) ? 366 : 365;
 					break;
 				case Frequency.MONTHLY_DAY:
-					upperBound = DateTime.DaysInMonth(month.Year, month.Month);
+					upperBound = DateTime.DaysInMonth(refTime.Year, refTime.Month);
 					break;
 				case Frequency.WEEKLY:
 					upperBound = 6;
@@ -110,16 +115,37 @@ namespace FinanceSim {
 			Array.Sort(randTimes);
 		}
 		internal override bool IsDue(DateTime day) {
-			bool isDue = false;
-			switch (Freq) {
-				case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; break;
-				case Frequency.MONTHLY_DAY: isDue = day.Day == randTimes[currRand]; break;
-				case Frequency.WEEKLY: isDue = (int)day.DayOfWeek == randTimes[currRand]; break;
+			if (needNewValues) {
+				bool renewable = false;
+				switch (Freq) {
+					case Frequency.YEARLY: renewable = day.DayOfYear == (DateTime.IsLeapYear(day.Year) ? 366 : 365); break;
+					case Frequency.MONTHLY_DAY: renewable = day.Day == DateTime.DaysInMonth(day.Year, day.Month); break;
+					case Frequency.WEEKLY: renewable = day.DayOfWeek == DayOfWeek.Saturday; break;
+	            }
+				if (renewable) {
+					RandomizeTimes(randTimes.Length, day.Add(TimeSpan.FromDays(1)));
+					currRand = 0;
+					needNewValues = false;
+				}
+				return false;
 			}
-			if (isDue && currRand + 1 < randTimes.Length) {
-				currRand++;
+			else {
+				bool isDue = false;
+				switch (Freq) {
+					case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; break;
+					case Frequency.MONTHLY_DAY: isDue = day.Day == randTimes[currRand]; break;
+					case Frequency.WEEKLY: isDue = (int)day.DayOfWeek == randTimes[currRand]; break;
+				}
+				if (isDue) {
+					if (currRand + 1 < randTimes.Length) {
+						currRand++;
+					}
+					else {
+						needNewValues = true;
+					}
+				}
+				return isDue;
 			}
-			return isDue;
 		}
 	}
 	class UncertainRandomPayment : UncertainPayment {

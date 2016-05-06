@@ -31,13 +31,14 @@
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <DockPanel Name="expensesPanel" Grid.Column="0" Background="Yellow">
-                    <Label>aksdfksl</Label>
-                </DockPanel>
+                <StackPanel Name="expensesPanel" Grid.Column="0" Background="Yellow">
+                    <Label>No expenses.</Label>
+                </StackPanel>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
                 <DockPanel Name="innerRightPanel" Grid.Column="2">
+					<Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click"/>
+					<Calendar Name="calendar"/>
                     <UniformGrid Name="calendarGrid" Columns="7" Rows="6" Background="Peru"/>
-
 
                 </DockPanel>
             </Grid>

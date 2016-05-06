@@ -9,7 +9,6 @@ using System.Windows.Controls;
 namespace FinanceSim {
 	public partial class MainWindow : Window {
 		//members
-		private List<Payment> payments;
 		private Page[] contents;
 		private Profile profile;
 		//constructors
@@ -17,7 +16,6 @@ namespace FinanceSim {
 			InitializeComponent();
 			profile = new Profile();
 			contents = new Page[] { new ProfileView(this, profile), new DataView(this, profile) };
-			payments = Payment.GeneratePayments(new Profile());
 			ChangeContent(0);
 		}
 		//methods
