@@ -70,6 +70,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CheckTextBox.cs" />
     <Compile Include="DataView.xaml.cs">
       <DependentUpon>DataView.xaml</DependentUpon>
     </Compile>

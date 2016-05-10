@@ -8,9 +8,46 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="ProfileView">
     <DockPanel Name="mainPanel">
-        <Button Name="goButton" Click="p_goButton_Click">skdfskldf</Button>
-		<TextBox Name="firstNameIn"/>
-		<TextBox Name="lastNameIn"/>
-		<DatePickerTextBox Name="desiredDateIn"/>
+        <Button Name="goButton" DockPanel.Dock="Bottom" Click="p_goButton_Click">Finish</Button>
+        <ScrollViewer DockPanel.Dock="Top">
+            <StackPanel>
+                <Label>Personal</Label>
+                <UniformGrid Columns="4" Rows="3">
+                    <Label>First Name:</Label>
+                    <TextBox Name="firstNameIn" LostFocus="String_LostFocus"/>
+                    <Label>Last Name:</Label>
+                    <TextBox Name="lastNameIn" LostFocus="String_LostFocus"/>
+                    <Label>Street Address:</Label>
+                    <TextBox Name="streetAddressIn" LostFocus="String_LostFocus"/>
+                    <Label>Apartment Number:</Label>
+                    <TextBox Name="apartmentNumberIn" LostFocus="Number_LostFocus"/>
+                    <Label>Zip Code:</Label>
+                    <TextBox Name="zipCodeIn" LostFocus="Number_LostFocus"/>
+                    <Label>Birthday:</Label>
+                    <DatePicker Name="birthdayIn"/>
+                </UniformGrid>
+                <Label>Income</Label>
+                <UniformGrid Rows="1" Columns="4">
+                    <Label>Income:</Label>
+                    <TextBox Name="incomeIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Savings:</Label>
+                    <TextBox Name="savingsIn" LostFocus="Currency_LostFocus"/>
+                </UniformGrid>
+                <Label>Apartment</Label>
+                <UniformGrid Columns="4" Rows="1">
+                    <Label>Renter's Insurance:</Label>
+                    <TextBox Name="rentersInsuranceIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Monthly Rent:</Label>
+                    <TextBox Name="monthlyRentIn" LostFocus="Currency_LostFocus"/>
+                </UniformGrid>
+                <Label>Utilities</Label>
+                <UniformGrid Columns="4" Rows="3">
+                    <Label>Internet:</Label>
+                    <TextBox Name="internetIn" LostFocus="Currency_LostFocus"/>
+					<CheckBox Name="countInternet"/>
+                </UniformGrid>
+                <DatePicker Name="desiredDateIn"/>
+            </StackPanel>
+        </ScrollViewer>
     </DockPanel>
 </Page>
