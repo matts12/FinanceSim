@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace FinanceSim {
-	class CheckTextBox : Control {
-		//TODO
-	}
+	
 }

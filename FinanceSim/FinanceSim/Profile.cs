@@ -37,8 +37,7 @@ namespace FinanceSim {
 		private int dogs;
 		private int cats;
 
-		private int desiredMonth;
-		private int desiredYear;
+		private DateTime desiredDate;
 		//constructors
 		internal Profile() {
 			//personal
@@ -64,8 +63,7 @@ namespace FinanceSim {
 			//pets
 			dogs = cats = 0;
 
-			desiredMonth = DateTime.Today.Month;
-			desiredYear = DateTime.Today.Year;
+			desiredDate = DateTime.Today;
 		}
 		//properties
 		//personal
@@ -98,8 +96,7 @@ namespace FinanceSim {
 		internal int Dogs { get { return dogs; } set { dogs = value; } }
 		internal int Cats { get { return cats; } set { cats = value; } }
 
-		internal int DesiredMonth { get { return desiredMonth; } set { desiredMonth = value; } }
-		internal int DesiredYear { get { return desiredYear; } set { desiredYear = value; } }
+		internal DateTime DesiredDate { get { return desiredDate; } set { desiredDate = value; } }
 		//methods
 	}
 }

@@ -21,7 +21,7 @@ namespace FinanceSim {
 			this.parent = parent;
 			this.profile = profile;
 			payments = Payment.GeneratePayments(profile);
-			date = new DateTime(profile.DesiredYear, profile.DesiredMonth, 1);
+			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			for (int i = 0; i < calendarGrid.Rows * calendarGrid.Columns; i++) {
 				Label l = new Label();
 				l.Content = i;

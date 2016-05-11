@@ -4,14 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:FinanceSim"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="300" d:DesignWidth="300"
       Title="ProfileView">
     <DockPanel Name="mainPanel">
         <Button Name="goButton" DockPanel.Dock="Bottom" Click="p_goButton_Click">Finish</Button>
-        <ScrollViewer DockPanel.Dock="Top">
-            <StackPanel>
-                <Label>Personal</Label>
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center">
+                <Label HorizontalAlignment="Center">Personal</Label>
                 <UniformGrid Columns="4" Rows="3">
                     <Label>First Name:</Label>
                     <TextBox Name="firstNameIn" LostFocus="String_LostFocus"/>
@@ -24,29 +24,72 @@
                     <Label>Zip Code:</Label>
                     <TextBox Name="zipCodeIn" LostFocus="Number_LostFocus"/>
                     <Label>Birthday:</Label>
-                    <DatePicker Name="birthdayIn"/>
+                    <DatePicker Name="birthdayIn" LostFocus="DateTime_LostFocus"/>
                 </UniformGrid>
-                <Label>Income</Label>
+                <Label HorizontalAlignment="Center">Income</Label>
                 <UniformGrid Rows="1" Columns="4">
                     <Label>Income:</Label>
                     <TextBox Name="incomeIn" LostFocus="Currency_LostFocus"/>
                     <Label>Savings:</Label>
                     <TextBox Name="savingsIn" LostFocus="Currency_LostFocus"/>
                 </UniformGrid>
-                <Label>Apartment</Label>
+                <Label HorizontalAlignment="Center">Apartment</Label>
                 <UniformGrid Columns="4" Rows="1">
                     <Label>Renter's Insurance:</Label>
                     <TextBox Name="rentersInsuranceIn" LostFocus="Currency_LostFocus"/>
                     <Label>Monthly Rent:</Label>
                     <TextBox Name="monthlyRentIn" LostFocus="Currency_LostFocus"/>
                 </UniformGrid>
-                <Label>Utilities</Label>
-                <UniformGrid Columns="4" Rows="3">
+                <Label HorizontalAlignment="Center">Utilities</Label>
+                <Label HorizontalAlignment="Center">Check the box to indicate that that utility is included in the rent.</Label>
+                <UniformGrid Columns="4" Rows="2">
                     <Label>Internet:</Label>
-                    <TextBox Name="internetIn" LostFocus="Currency_LostFocus"/>
-					<CheckBox Name="countInternet"/>
+                    <DockPanel>
+                        <CheckBox Name="countInternet" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                        <TextBox Name="internetIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
+                    </DockPanel>
+                    <Label>Heat:</Label>
+                    <DockPanel>
+                        <CheckBox Name="countHeat" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                        <TextBox Name="heatIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
+                    </DockPanel>
+                    <Label>Electricity:</Label>
+                    <DockPanel>
+                        <CheckBox Name="countElectricity" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                        <TextBox Name="electricityIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
+                    </DockPanel>
+                    <Label>Water:</Label>
+                    <DockPanel>
+                        <CheckBox Name="countWater" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                        <TextBox Name="waterIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
+                    </DockPanel>
                 </UniformGrid>
-                <DatePicker Name="desiredDateIn"/>
+                <Label HorizontalAlignment="Center">Other Bills</Label>
+                <ListView Name="regularBills" MinHeight="50" MaxHeight="150"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="addBillButton" Click="addBillButton_Click" Margin="0,0,50,0" Width="100">Add</Button>
+                    <Button Name="removeBillButton" Click="removeBillButton_Click" Margin="50,0,0,0" Width="100">Remove</Button>
+				</StackPanel>
+                <Label HorizontalAlignment="Center">Car</Label>
+                <UniformGrid Columns="4" Rows="2">
+                    <Label>Car Value:</Label>
+                    <TextBox Name="carValueIn" LostFocus="Currency_LostFocus"/>
+                    <Label>MPG:</Label>
+                    <TextBox Name="mpgIn" LostFocus="Number_LostFocus"/>
+                    <Label>Monthly Car Payment:</Label>
+                    <TextBox Name="monthlyCarPaymentIn" LostFocus="Currency_LostFocus"/>
+					<Label/>
+                    <CheckBox Name="isCarSavingsIn" VerticalAlignment="Center">Saving up for a car</CheckBox>
+                </UniformGrid>
+                <Label HorizontalAlignment="Center">Pets</Label>
+                <UniformGrid Columns="4" Rows="1">
+                    <Label>Dogs:</Label>
+                    <TextBox Name="dogsIn" LostFocus="Number_LostFocus"/>
+                    <Label>Cats:</Label>
+                    <TextBox Name="catsIn" LostFocus="Number_LostFocus"/>
+                </UniformGrid>
+                <Label HorizontalAlignment="Center">Start Date</Label>
+				<DatePicker Name="desiredDateIn" LostFocus="DateTime_LostFocus"/>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
