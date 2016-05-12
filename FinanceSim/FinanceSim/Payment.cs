@@ -22,11 +22,23 @@ namespace FinanceSim {
 		internal abstract decimal GetPayment();
 		internal abstract bool IsDue(DateTime day);
 		//statics
+		private static DateTime RandomDay() {
+			return new DateTime(1, 1, rand.Next(1, 28));
+        }
 		internal static List<Payment> GeneratePayments(Profile profile) {
 			//TODO
 			List<Payment> payments = new List<Payment>();
-			payments.Add(new CertainFixedPayment("Health care", 500, Frequency.MONTHLY_DAY, new DateTime(2016, 5, 7)));
-			payments.Add(new UncertainRandomPayment("Broken stuff", Frequency.WEEKLY, 5.00m, 10.00m, rand, 4, DateTime.Today));
+			//home
+			payments.Add(new CertainFixedPayment("Apartment Rent", profile.MonthlyRent, Frequency.MONTHLY_DAY, new DateTime(1, 1, 1)));
+			payments.Add(new CertainFixedPayment("Renter's Insurance", profile.RentersInsurance, Frequency.MONTHLY_DAY, RandomDay()));
+			payments.Add(new UncertainRandomPayment("Home Supplies", Frequency.MONTHLY_DAY, 5m, 40m, rand, 2, profile.DesiredDate));
+			//utilities
+			//TODO electricity, heating
+			payments.Add(new CertainRandomPayment("Water Bill", profile.Water * .8m, profile.Water * 1.2m, rand, Frequency.MONTHLY_DAY, RandomDay()));
+			payments.Add(new CertainFixedPayment("Internet Bill", profile.Internet, Frequency.MONTHLY_DAY, RandomDay()));
+			//payments.Add(new CertainFixedPayment("Cell Phone Bill", profile.CellPhone, Frequency.MONTHLY_DAY, RandomDay()));
+			//car
+			//payments.Add(new UncertainRandomPayment("Gas", Frequency.MONTHLY_DAY, 0.0, 0.0, rand, 5, profile.DesiredDate));
 			return payments;
 		}
 	}
@@ -62,7 +74,7 @@ namespace FinanceSim {
 		private decimal upper, lower;
 		private Random rand;
 		//constructors
-		internal CertainRandomPayment(string name, decimal upper, decimal lower, Random rand,
+		internal CertainRandomPayment(string name, decimal lower, decimal upper, Random rand,
 			Frequency freq, DateTime refTime) : base(name, freq, refTime) {
 			this.upper = upper;
 			this.lower = lower;
@@ -152,7 +164,7 @@ namespace FinanceSim {
 		//members
 		private decimal upper, lower;
 		//constructors
-		internal UncertainRandomPayment(string name, Frequency freq, decimal upper, decimal lower, Random rand, int times, DateTime month) : base(name, freq, times, month, rand) {
+		internal UncertainRandomPayment(string name, Frequency freq, decimal lower, decimal upper, Random rand, int times, DateTime month) : base(name, freq, times, month, rand) {
 			this.upper = upper;
 			this.lower = lower;
 		}

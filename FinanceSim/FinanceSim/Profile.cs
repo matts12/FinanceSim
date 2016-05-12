@@ -27,7 +27,7 @@ namespace FinanceSim {
 		private decimal water;
 		private bool[] utilIncluded;
 		//regular bills
-		private List<CertainPayment> regularBills;
+		private List<CertainFixedPayment> regularBills;
 		//car
 		private decimal carValue;
 		private int mpg;
@@ -55,7 +55,7 @@ namespace FinanceSim {
 			internet = heat = electricity = water = 0m;
 			utilIncluded = new bool[4];
 			//regular bills
-			regularBills = new List<CertainPayment>();
+			regularBills = new List<CertainFixedPayment>();
 			//car
 			carValue = monthlyCarPayment = 0m;
 			mpg = 0;
@@ -86,7 +86,7 @@ namespace FinanceSim {
 		internal decimal Water { get { return water; } set { water = value; } }
 		internal bool[] UtilIncluded { get { return utilIncluded; } set { utilIncluded = value; } }
 		//regular bills
-		internal List<CertainPayment> RegularBills { get { return regularBills; } set { regularBills = value; } }
+		internal List<CertainFixedPayment> RegularBills { get { return regularBills; } set { regularBills = value; } }
 		//car
 		internal decimal CarValue { get { return carValue; } set { carValue = value; } }
 		internal int MPG { get { return mpg; } set { mpg = value; } }

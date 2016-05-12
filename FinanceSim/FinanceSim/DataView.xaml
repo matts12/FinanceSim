@@ -37,6 +37,7 @@
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
                 <DockPanel Name="innerRightPanel" Grid.Column="2">
 					<Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click"/>
+                    <Label Name="moneyLabel"></Label>
 					<Calendar Name="calendar"/>
                     <UniformGrid Name="calendarGrid" Columns="7" Rows="6" Background="Peru"/>
 

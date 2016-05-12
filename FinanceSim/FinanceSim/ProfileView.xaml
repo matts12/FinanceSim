@@ -65,7 +65,7 @@
                     </DockPanel>
                 </UniformGrid>
                 <Label HorizontalAlignment="Center">Other Bills</Label>
-                <ListView Name="regularBills" MinHeight="50" MaxHeight="150"/>
+                <ListView Name="regularBills" MinHeight="50" MaxHeight="150" MaxWidth="500" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="addBillButton" Click="addBillButton_Click" Margin="0,0,50,0" Width="100">Add</Button>
                     <Button Name="removeBillButton" Click="removeBillButton_Click" Margin="50,0,0,0" Width="100">Remove</Button>

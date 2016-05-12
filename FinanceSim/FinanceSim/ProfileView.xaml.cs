@@ -21,10 +21,11 @@ namespace FinanceSim {
 		}
 		//methods
 		private void p_goButton_Click(object sender, RoutedEventArgs e) {
-			if (ValidateProfile()) {
-				CompleteProfile();
-				parent.ChangeContent(1);
-			}
+			//if (ValidateProfile()) {
+			//	CompleteProfile();
+			//	parent.ChangeContent(1);
+			//}
+			parent.ChangeContent(1);
 		}
 		private void CompleteProfile() {
 			//personal
@@ -48,7 +49,7 @@ namespace FinanceSim {
 			profile.UtilIncluded = new bool[] { countInternet.IsChecked.Value, countHeat.IsChecked.Value,
 				countElectricity.IsChecked.Value, countWater.IsChecked.Value };
 			//regular bills
-			//TODO regular bills
+			profile.RegularBills = GenerateRegularBills();
 			//car
 			profile.CarValue = decimal.Parse(carValueIn.Text, NumberStyles.Currency);
 			profile.MPG = int.Parse(mpgIn.Text);
@@ -60,10 +61,37 @@ namespace FinanceSim {
 
 			profile.DesiredDate = desiredDateIn.SelectedDate.Value;
 		}
+		private List<CertainFixedPayment> GenerateRegularBills() {
+			List<CertainFixedPayment> bills = new List<CertainFixedPayment>();
+			for (int i = 0; i < regularBills.Items.Count; i++) {
+				UIElementCollection uiec = (regularBills.Items[i] as UniformGrid).Children;
+				bills.Add(new CertainFixedPayment((uiec[1] as TextBox).Text, 
+					decimal.Parse((uiec[3] as TextBox).Text, NumberStyles.Currency), 
+					Frequency.MONTHLY_DAY, (uiec[5] as DatePicker).SelectedDate.Value));
+			}
+			return bills;
+		}
 		private bool ValidateProfile() {
-			//return ValidateText(firstNameIn) & ValidateText(lastNameIn) & ValidateText(streetAddressIn)
-			//	& ValidateCurrency(incomeIn);
-			return true; //TODO
+			return ValidateText(firstNameIn) & ValidateText(lastNameIn) & ValidateText(streetAddressIn) //personal
+				& ValidateNumber(apartmentNumberIn) & ValidateNumber(zipCodeIn) & ValidateDateTime(birthdayIn)
+				& ValidateCurrency(incomeIn) & ValidateCurrency(savingsIn) //income
+				& ValidateCurrency(rentersInsuranceIn) & ValidateCurrency(monthlyRentIn) //apartment
+				& ValidateCurrency(internetIn) & ValidateCurrency(heatIn) & ValidateCurrency(electricityIn) //utilities
+				& ValidateCurrency(waterIn)
+				& ValidateCustoms() //regular bills
+				& ValidateCurrency(carValueIn) & ValidateNumber(mpgIn) & ValidateCurrency(monthlyCarPaymentIn)
+				& ValidateNumber(dogsIn) & ValidateNumber(catsIn)
+				& ValidateDateTime(desiredDateIn); //pets
+		}
+		private bool ValidateCustoms() {
+			bool valid = true;
+			for(int i = 0; i < regularBills.Items.Count; i++) {
+				UIElementCollection uiec = (regularBills.Items[i] as UniformGrid).Children;
+				valid &= ValidateText(uiec[1] as TextBox);
+				valid &= ValidateCurrency(uiec[3] as TextBox);
+				valid &= ValidateDateTime(uiec[5] as DatePicker);
+			}
+			return valid;
 		}
 		private bool ValidateText(TextBox tb) {
 			ColorValid(tb, tb.Text.Length > 0);
@@ -91,6 +119,8 @@ namespace FinanceSim {
 			return valid;
 		}
 		private bool ValidateDateTime(DatePicker dp) {
+			bool valid = dp.SelectedDate.HasValue;
+			dp.Background = valid ? Brushes.White : Brushes.DarkSalmon;
 			return dp.SelectedDate.HasValue;
 		}
 		private void ColorValid(TextBox tb, bool valid) {
@@ -111,19 +141,27 @@ namespace FinanceSim {
 		}
 		private void addBillButton_Click(object sender, RoutedEventArgs e) {
 			UniformGrid ug = new UniformGrid();
-			ug.Columns = 4;
+			ug.Columns = 6;
 			Label l = new Label();
 			l.Content = "Name:";
 			ug.Children.Add(l);
 			TextBox tb = new TextBox();
 			tb.LostFocus += String_LostFocus;
 			ug.Children.Add(tb);
+
 			l = new Label();
-			l.Content = "Monthly Payment:";
+			l.Content = "Payment:";
 			ug.Children.Add(l);
 			tb = new TextBox();
 			tb.LostFocus += Currency_LostFocus;
 			ug.Children.Add(tb);
+
+			l = new Label();
+			l.Content = "Payment Day:";
+			ug.Children.Add(l);
+			DatePicker dp = new DatePicker();
+			dp.LostFocus += DateTime_LostFocus;
+			ug.Children.Add(dp);
 
 			regularBills.Items.Add(ug);
 		}

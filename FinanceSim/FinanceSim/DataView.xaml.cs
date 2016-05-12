@@ -14,6 +14,7 @@ namespace FinanceSim {
 		private MainWindow parent;
 		private Profile profile;
 		private DateTime date;
+		private decimal money;
 		private List<Payment> payments;
 		//constructors
 		internal DataView(MainWindow parent, Profile profile) {
@@ -29,6 +30,7 @@ namespace FinanceSim {
 			}
 			calendar.IsTodayHighlighted = false;
 			calendar.SelectionMode = CalendarSelectionMode.SingleDate;
+			money = profile.Savings;
 			//calendar.SelectedDates.Add(new DateTime(2016, 5, 20));
 		}
 		//methods
@@ -36,7 +38,7 @@ namespace FinanceSim {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
 			foreach(Payment p in payments) {
 				if (p.IsDue(date)) {
-					vPays.Add(new ViewablePayment(p.Name, p.GetPayment()));
+					vPays.Add(new ViewablePayment(p));
 				}
 			}
 			return vPays;
@@ -48,19 +50,22 @@ namespace FinanceSim {
 			List<ViewablePayment> vPays = GetExpenses();
 			foreach(ViewablePayment vp in vPays) {
 				expensesPanel.Children.Add(vp);
+				money -= vp.Bill;
 			}
+			moneyLabel.Content = money.ToString("C");
 		}
 	}
 	class ViewablePayment : Label {
 		//members
-		private string name;
-		private decimal payment;
+		private Payment payment;
+		private decimal bill;
 		//constructors
-		internal ViewablePayment(string name, decimal payment) {
-			this.name = name;
+		internal ViewablePayment(Payment payment) {
 			this.payment = payment;
-			Content = name + " " + payment;
+			bill = payment.GetPayment();
+			Content = payment.Name + " " + bill.ToString("C");
 		}
-		//methods
+		//properties
+		internal decimal Bill { get { return bill; } }
 	}
 }
