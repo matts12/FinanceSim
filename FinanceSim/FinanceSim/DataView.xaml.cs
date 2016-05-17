@@ -12,17 +12,13 @@ namespace FinanceSim {
 	public partial class DataView : Page {
 		//members
 		private MainWindow parent;
-		private Profile profile;
 		private DateTime date;
 		private decimal money;
 		private List<Payment> payments;
 		//constructors
-		internal DataView(MainWindow parent, Profile profile) {
+		internal DataView(MainWindow parent) {
 			InitializeComponent();
 			this.parent = parent;
-			this.profile = profile;
-			payments = Payment.GeneratePayments(profile);
-			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			for (int i = 0; i < calendarGrid.Rows * calendarGrid.Columns; i++) {
 				Label l = new Label();
 				l.Content = i;
@@ -30,10 +26,33 @@ namespace FinanceSim {
 			}
 			calendar.IsTodayHighlighted = false;
 			calendar.SelectionMode = CalendarSelectionMode.SingleDate;
-			money = profile.Savings;
+
 			//calendar.SelectedDates.Add(new DateTime(2016, 5, 20));
 		}
 		//methods
+		internal void OpenProfile(Profile profile) {
+			payments = Payment.GeneratePayments(profile);
+			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
+			money = profile.Savings;
+			DoExpenses();
+		}
+		private void DoExpenses() {
+			dateLabel.Content = date.ToString("MM/dd/yyyy");
+			expensesPanel.Children.Clear();
+			List<ViewablePayment> vPays = GetExpenses();
+			foreach (ViewablePayment vp in vPays) {
+				vp.FontSize = 14;
+				expensesPanel.Children.Add(vp);
+				money += vp.Bill;
+			}
+			if(vPays.Count == 0) {
+				Label ne = new Label();
+				ne.Content = "No expenses.";
+				ne.FontSize = 14;
+				expensesPanel.Children.Add(ne);
+            }
+			moneyLabel.Content = "Balance: " + money.ToString("C");
+		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
 			foreach(Payment p in payments) {
@@ -45,14 +64,7 @@ namespace FinanceSim {
 		}
 		private void advanceButton_Click(object sender, RoutedEventArgs e) {
 			date = date.Add(TimeSpan.FromDays(1));
-			dateLabel.Content = date.ToString();
-			expensesPanel.Children.Clear();
-			List<ViewablePayment> vPays = GetExpenses();
-			foreach(ViewablePayment vp in vPays) {
-				expensesPanel.Children.Add(vp);
-				money -= vp.Bill;
-			}
-			moneyLabel.Content = money.ToString("C");
+			DoExpenses();
 		}
 	}
 	class ViewablePayment : Label {

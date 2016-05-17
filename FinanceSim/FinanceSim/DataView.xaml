@@ -21,8 +21,8 @@
         </StackPanel>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
         <DockPanel Name="rightPanel"  Grid.Column="2" Background="Chocolate">
-            <Label Name="dateLabel"/>
-            <Grid>
+            <Label Name="dateLabel" FontFamily="Century Gothic" FontSize="18" DockPanel.Dock="Top"/>
+            <Grid DockPanel.Dock="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="5"/>
@@ -36,11 +36,10 @@
                 </StackPanel>
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
                 <DockPanel Name="innerRightPanel" Grid.Column="2">
-					<Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click"/>
-                    <Label Name="moneyLabel"></Label>
-					<Calendar Name="calendar"/>
-                    <UniformGrid Name="calendarGrid" Columns="7" Rows="6" Background="Peru"/>
-
+					<Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click" Content="Advance"/>
+                    <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
+                    <Calendar DockPanel.Dock="Top" Name="calendar"/>
+                    <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" Columns="7" Rows="6" Background="Peru"/>
                 </DockPanel>
             </Grid>
         </DockPanel>

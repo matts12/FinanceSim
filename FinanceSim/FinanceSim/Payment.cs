@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace FinanceSim {
-	enum Frequency { YEARLY, MONTHLY_DAY, WEEKLY }
+	enum Frequency { YEARLY, MONTHLY_DAY, WEEKLY, BI_MONTHLY }
 	abstract class Payment {
 		private static Random rand = new Random();
 		//members
@@ -26,16 +26,25 @@ namespace FinanceSim {
 			return new DateTime(1, 1, rand.Next(1, 28));
         }
 		internal static List<Payment> GeneratePayments(Profile profile) {
-			//TODO
+			//TODO add payments
 			List<Payment> payments = new List<Payment>();
+			//misc
+			DateTime tuesday = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
+			while (!tuesday.DayOfWeek.Equals(DayOfWeek.Tuesday))
+				tuesday = tuesday.AddDays(1);
+            payments.Add(new CertainFixedPayment("Paycheck", -1 * profile.Income, Frequency.BI_MONTHLY, tuesday));
+			foreach (CertainFixedPayment cfp in profile.RegularBills)
+				payments.Add(cfp);
 			//home
 			payments.Add(new CertainFixedPayment("Apartment Rent", profile.MonthlyRent, Frequency.MONTHLY_DAY, new DateTime(1, 1, 1)));
 			payments.Add(new CertainFixedPayment("Renter's Insurance", profile.RentersInsurance, Frequency.MONTHLY_DAY, RandomDay()));
 			payments.Add(new UncertainRandomPayment("Home Supplies", Frequency.MONTHLY_DAY, 5m, 40m, rand, 2, profile.DesiredDate));
 			//utilities
-			//TODO electricity, heating
-			payments.Add(new CertainRandomPayment("Water Bill", profile.Water * .8m, profile.Water * 1.2m, rand, Frequency.MONTHLY_DAY, RandomDay()));
-			payments.Add(new CertainFixedPayment("Internet Bill", profile.Internet, Frequency.MONTHLY_DAY, RandomDay()));
+			if (!profile.UtilIncluded[0])
+				payments.Add(new CertainFixedPayment("Internet Bill", profile.Internet, Frequency.MONTHLY_DAY, RandomDay()));
+			//TODO heat, electricity
+			if (!profile.UtilIncluded[3])
+				payments.Add(new CertainRandomPayment("Water Bill", profile.Water * .8m, profile.Water * 1.2m, rand, Frequency.MONTHLY_DAY, RandomDay()));
 			//payments.Add(new CertainFixedPayment("Cell Phone Bill", profile.CellPhone, Frequency.MONTHLY_DAY, RandomDay()));
 			//car
 			//payments.Add(new UncertainRandomPayment("Gas", Frequency.MONTHLY_DAY, 0.0, 0.0, rand, 5, profile.DesiredDate));
@@ -54,7 +63,8 @@ namespace FinanceSim {
 			switch (Freq) {
 				case Frequency.YEARLY: return day.DayOfYear == refTime.DayOfYear;
 				case Frequency.MONTHLY_DAY: return day.Day == refTime.Day;
-				case Frequency.WEEKLY: return day.DayOfWeek == refTime.DayOfWeek;
+				case Frequency.WEEKLY: Console.WriteLine(day.DayOfWeek + " " + refTime.DayOfWeek); return day.DayOfWeek == refTime.DayOfWeek;
+				case Frequency.BI_MONTHLY: return day.DayOfWeek == refTime.DayOfWeek && day.Subtract(refTime).Days % 14 == 0;
 			}
 			return true;
 		}
@@ -67,7 +77,7 @@ namespace FinanceSim {
 			this.payment = payment;
 		}
 		//methods
-		internal override decimal GetPayment() { return payment; }
+		internal override decimal GetPayment() { return -payment; }
 	}
 	class CertainRandomPayment : CertainPayment {
 		//members
@@ -82,7 +92,7 @@ namespace FinanceSim {
 		}
 		//methods
 		internal override decimal GetPayment() {
-			return (decimal)rand.NextDouble() * upper + lower;
+			return -1 * ((decimal)rand.NextDouble() * upper + lower);
 		}
 	}
 	abstract class UncertainPayment : Payment {
@@ -115,6 +125,8 @@ namespace FinanceSim {
 					upperBound = 6;
 					lowerBound = 0;
 					break;
+				case Frequency.BI_MONTHLY:
+					throw new NotImplementedException();
 			}
 			for (int i = 0; i < times; i++) {
 				int r;
@@ -133,6 +145,7 @@ namespace FinanceSim {
 					case Frequency.YEARLY: renewable = day.DayOfYear == (DateTime.IsLeapYear(day.Year) ? 366 : 365); break;
 					case Frequency.MONTHLY_DAY: renewable = day.Day == DateTime.DaysInMonth(day.Year, day.Month); break;
 					case Frequency.WEEKLY: renewable = day.DayOfWeek == DayOfWeek.Saturday; break;
+					case Frequency.BI_MONTHLY: throw new NotImplementedException();
 	            }
 				if (renewable) {
 					RandomizeTimes(randTimes.Length, day.Add(TimeSpan.FromDays(1)));
@@ -147,6 +160,7 @@ namespace FinanceSim {
 					case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; break;
 					case Frequency.MONTHLY_DAY: isDue = day.Day == randTimes[currRand]; break;
 					case Frequency.WEEKLY: isDue = (int)day.DayOfWeek == randTimes[currRand]; break;
+					case Frequency.BI_MONTHLY: throw new NotImplementedException();
 				}
 				if (isDue) {
 					if (currRand + 1 < randTimes.Length) {
@@ -170,7 +184,7 @@ namespace FinanceSim {
 		}
 		//methods
 		internal override decimal GetPayment() {
-			return (decimal)Rand.NextDouble() * upper + lower;
+			return -1 * ((decimal)Rand.NextDouble() * upper + lower);
 		}
 	}
 }

@@ -15,11 +15,13 @@ namespace FinanceSim {
 		public MainWindow() {
 			InitializeComponent();
 			profile = new Profile();
-			contents = new Page[] { new ProfileView(this, profile), new DataView(this, profile) };
+			contents = new Page[] { new ProfileView(this, profile), new DataView(this) };
 			ChangeContent(0);
 		}
 		//methods
 		internal void ChangeContent(int i) {
+			if (i == 1)
+				(contents[1] as DataView).OpenProfile(profile);
 			Content = contents[i];
 		}
 	}

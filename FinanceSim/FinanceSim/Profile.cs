@@ -39,32 +39,66 @@ namespace FinanceSim {
 
 		private DateTime desiredDate;
 		//constructors
+		//test profile
 		internal Profile() {
 			//personal
-			firstName = "";
-			lastName = "";
-			streetAddress = "";
-            apartmentNumber = 1;
+			firstName = "Matt";
+			lastName = "Spooner";
+			streetAddress = "26 Shedd Lane";
+			apartmentNumber = 12;
 			zipCode = 03049;
-			birthday = DateTime.Today;
+			birthday = new DateTime(1998, 3, 12);
 			//income
-			income = savings = 0m;
+			income = 2000m;
+			savings = 500m;
 			//apartment
-			rentersInsurance = monthlyRent = 0m;
+			rentersInsurance = 40m;
+			monthlyRent = 1000m;
 			//utilities
-			internet = heat = electricity = water = 0m;
-			utilIncluded = new bool[4];
+			internet = 25m;
+			heat = 35m;
+			electricity = water = 0m;
+			utilIncluded = new bool[4] { false, false, true, true };
 			//regular bills
 			regularBills = new List<CertainFixedPayment>();
+			regularBills.Add(new CertainFixedPayment("Some things", 4.50m, Frequency.WEEKLY, DateTime.Today));
 			//car
-			carValue = monthlyCarPayment = 0m;
-			mpg = 0;
+			carValue = 35000m;
+			monthlyCarPayment = 150m;
+			mpg = 40;
 			isCarSavings = false;
 			//pets
-			dogs = cats = 0;
+			dogs = 0;
+			cats = 1;
 
 			desiredDate = DateTime.Today;
 		}
+		//internal Profile() {
+		//	//personal
+		//	firstName = "";
+		//	lastName = "";
+		//	streetAddress = "";
+		//          apartmentNumber = 1;
+		//	zipCode = 03049;
+		//	birthday = DateTime.Today;
+		//	//income
+		//	income = savings = 0m;
+		//	//apartment
+		//	rentersInsurance = monthlyRent = 0m;
+		//	//utilities
+		//	internet = heat = electricity = water = 0m;
+		//	utilIncluded = new bool[4];
+		//	//regular bills
+		//	regularBills = new List<CertainFixedPayment>();
+		//	//car
+		//	carValue = monthlyCarPayment = 0m;
+		//	mpg = 0;
+		//	isCarSavings = false;
+		//	//pets
+		//	dogs = cats = 0;
+
+		//	desiredDate = DateTime.Today;
+		//}
 		//properties
 		//personal
 		internal string FirstName { get { return firstName; } set { firstName = value; } }
