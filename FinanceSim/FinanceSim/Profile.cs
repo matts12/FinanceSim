@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinanceSim {
 	[Serializable]
-	class Profile : ISerializable {
+	class Profile : ISerializable, IComparable<Profile> {
 		//members
 		//personal
 		private string firstName;
@@ -170,6 +170,9 @@ namespace FinanceSim {
 			//others
 			info.AddValue("desiredDate", desiredDate);
 			info.AddValue("lastOpened", lastOpened);
+		}
+		public int CompareTo(Profile other) {
+			return lastOpened.CompareTo(other.lastOpened);
 		}
 	}
 }

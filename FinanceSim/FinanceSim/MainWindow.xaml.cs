@@ -26,11 +26,15 @@ namespace FinanceSim {
 			Content = titleView;
 		}
 		//methods
-		internal void OpenProfile(Profile profile) {
-			dataView.OpenProfile(profile);
+		internal void OpenProfile(int i) {
+			OpenProfile(profiles[i]);
+		}
+		internal void OpenProfile(Profile p) {
+			dataView.OpenProfile(p);
 			Content = dataView;
 		}
 		private void SaveProfiles() {
+			profiles.Sort();
 			using (Stream stream = File.Open(Environment.CurrentDirectory + "/financeData.bin", FileMode.Create)) {
 				BinaryFormatter bformatter = new BinaryFormatter();
 				bformatter.Serialize(stream, profiles);
@@ -54,8 +58,12 @@ namespace FinanceSim {
 			profiles.Add(profile);
 			SaveProfiles();
 		}
-		internal void ReturnToTitle() {
+		internal void ReturnAndSave() {
 			SaveProfiles();
+			titleView.OpenProfiles(profiles);
+			Return();
+		}
+		internal void Return() {
 			Content = titleView;
 		}
 		internal void NewProfile() {
@@ -65,6 +73,9 @@ namespace FinanceSim {
 		internal void EditProfile(Profile profile) {
 			profileView.LoadProfile(profile);
 			Content = profileView;
+		}
+		internal void EditProfile(int i) {
+			EditProfile(profiles[i]);
 		}
 	}
 }

@@ -22,22 +22,68 @@ namespace FinanceSim {
 			edit = false;
 		}
 		//methods
-		private void p_goButton_Click(object sender, RoutedEventArgs e) {
-			if (ValidateProfile()) {
-				CompleteProfile();
-				if (edit) {
-					parent.ReturnToTitle();
-				}
-				else {
-					parent.AddProfile(profile);
-					parent.OpenProfile(profile);
-				}
-			}
+		private void Clear() {
+			//personal
+			firstNameIn.Text = "";
+			firstNameIn.Background = Brushes.White;
+            lastNameIn.Text = "";
+			lastNameIn.Background = Brushes.White;
+			streetAddressIn.Text = "";
+			streetAddressIn.Background = Brushes.White;
+			apartmentNumberIn.Text = "";
+			apartmentNumberIn.Background = Brushes.White;
+			zipCodeIn.Text = "";
+			zipCodeIn.Background = Brushes.White;
+			birthdayIn.SelectedDate = null;
+			birthdayIn.Background = Brushes.White;
+			//income
+			incomeIn.Text = "";
+			incomeIn.Background = Brushes.White;
+			savingsIn.Text = "";
+			savingsIn.Background = Brushes.White;
+			//apartment
+			rentersInsuranceIn.Text = "";
+			rentersInsuranceIn.Background = Brushes.White;
+			monthlyRentIn.Text = "";
+			monthlyRentIn.Background = Brushes.White;
+			//utilities
+			internetIn.Text = "";
+			internetIn.Background = Brushes.White;
+			heatIn.Text = "";
+			heatIn.Background = Brushes.White;
+			electricityIn.Text = "";
+			electricityIn.Background = Brushes.White;
+			waterIn.Text = "";
+			waterIn.Background = Brushes.White;
+			countInternet.IsChecked = countHeat.IsChecked = 
+				countElectricity.IsChecked = countWater.IsChecked = false;
+			//regular bills
+			regularBills.Items.Clear();
+			//car
+			carValueIn.Text = "";
+			carValueIn.Background = Brushes.White;
+			mpgIn.Text = "";
+			mpgIn.Background = Brushes.White;
+			monthlyCarPaymentIn.Text = "";
+			monthlyCarPaymentIn.Background = Brushes.White;
+			isCarSavingsIn.IsChecked = false;
+			//pets
+			dogsIn.Text = "";
+			dogsIn.Background = Brushes.White;
+			catsIn.Text = "";
+			catsIn.Background = Brushes.White;
+
+			desiredDateIn.SelectedDate = null;
+			desiredDateIn.Background = Brushes.White;
 		}
 		internal void NewProfile() {
+			edit = false;
+			Clear();
 			this.profile = new Profile();
 		}
 		internal void LoadProfile(Profile newProfile) {
+			edit = true;
+			Clear();
 			//personal
 			this.profile = newProfile;
 			firstNameIn.Text = newProfile.FirstName;
@@ -222,6 +268,21 @@ namespace FinanceSim {
 			if(regularBills.SelectedIndex != -1) {
 				regularBills.Items.RemoveAt(regularBills.SelectedIndex);
 			}
+		}
+		private void goButton_Click(object sender, RoutedEventArgs e) {
+			if (ValidateProfile()) {
+				CompleteProfile();
+				if (edit) {
+					parent.ReturnAndSave();
+				}
+				else {
+					parent.AddProfile(profile);
+					parent.OpenProfile(profile);
+				}
+			}
+		}
+		private void cancelButton_Click(object sender, RoutedEventArgs e) {
+			parent.Return();
 		}
 	}
 }

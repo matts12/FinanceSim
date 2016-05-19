@@ -98,7 +98,7 @@ namespace FinanceSim {
 			this.payment = payment;
 		}
 		internal CertainFixedPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
-			info.AddValue("payment", payment);
+			payment = info.GetDecimal("payment");
 		}
 		//methods
 		internal override decimal GetPayment() { return -payment; }

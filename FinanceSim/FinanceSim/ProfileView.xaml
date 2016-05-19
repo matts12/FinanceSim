@@ -8,7 +8,10 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="ProfileView">
     <DockPanel Name="mainPanel">
-        <Button Name="goButton" DockPanel.Dock="Bottom" Click="p_goButton_Click">Finish</Button>
+        <UniformGrid DockPanel.Dock="Bottom" Rows="1" Columns="2">
+            <Button Name="cancelButton" Click="cancelButton_Click">Cancel</Button>
+            <Button Name="goButton" Click="goButton_Click">Finish</Button>
+        </UniformGrid>
         <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center">
                 <Label HorizontalAlignment="Center">Personal</Label>

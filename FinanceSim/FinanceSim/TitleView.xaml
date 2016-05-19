@@ -8,11 +8,14 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="TitleView">
     <DockPanel>
-        <Label>Daily Expense Simulator</Label>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Name="profilesPanel">
-                <Button Name="newButton" Click="NewButton_Click"></Button>
-			</StackPanel>
-		</ScrollViewer>
+        <Label DockPanel.Dock="Top">Daily Expense Simulator</Label>
+        <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto">
+            <DockPanel>
+                <Button DockPanel.Dock="Top" Name="newButton" Click="NewButton_Click">New</Button>
+                <ListView DockPanel.Dock="Bottom" Name="profilesPanel">
+					
+                </ListView>
+            </DockPanel>
+        </ScrollViewer>
 	</DockPanel>
 </Page>
