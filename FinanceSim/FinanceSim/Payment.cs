@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace FinanceSim {
 	enum Frequency { YEARLY, MONTHLY_DAY, WEEKLY, BI_MONTHLY }
-	abstract class Payment {
+	[Serializable]
+	abstract class Payment : ISerializable {
 		private static Random rand = new Random();
 		//members
 		private string name;
@@ -14,6 +16,10 @@ namespace FinanceSim {
 		internal Payment(string name, Frequency freq) {
 			this.name = name;
 			this.freq = freq;
+		}
+		internal Payment(SerializationInfo info, StreamingContext context) {
+			name = info.GetString("name");
+			freq = (Frequency)info.GetInt32("freq");
 		}
 		//properties
 		internal string Name { get { return name; } }
@@ -50,14 +56,24 @@ namespace FinanceSim {
 			//payments.Add(new UncertainRandomPayment("Gas", Frequency.MONTHLY_DAY, 0.0, 0.0, rand, 5, profile.DesiredDate));
 			return payments;
 		}
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
+			info.AddValue("name", name);
+			info.AddValue("freq", (int)freq);
+		}
 	}
-	abstract class CertainPayment : Payment {
+	[Serializable]
+	abstract class CertainPayment : Payment, ISerializable {
 		//members
 		private DateTime refTime;
 		//constructors
 		internal CertainPayment(string name, Frequency freq, DateTime refTime) : base(name, freq) {
 			this.refTime = refTime;
 		}
+		internal CertainPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			refTime = info.GetDateTime("refTime");
+		}
+		//properties
+		internal DateTime RefTime { get { return refTime; } }
 		//methods
 		internal override bool IsDue(DateTime day) {
 			switch (Freq) {
@@ -68,16 +84,28 @@ namespace FinanceSim {
 			}
 			return true;
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("refTime", refTime);
+		}
 	}
-	class CertainFixedPayment : CertainPayment {
+	[Serializable]
+	class CertainFixedPayment : CertainPayment, ISerializable {
 		//members
 		private decimal payment;
 		//constructors
 		internal CertainFixedPayment(string name, decimal payment, Frequency freq, DateTime refTime) : base(name, freq, refTime) {
 			this.payment = payment;
 		}
+		internal CertainFixedPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			info.AddValue("payment", payment);
+		}
 		//methods
 		internal override decimal GetPayment() { return -payment; }
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("payment", payment);
+		}
 	}
 	class CertainRandomPayment : CertainPayment {
 		//members

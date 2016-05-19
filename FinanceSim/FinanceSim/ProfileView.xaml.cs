@@ -13,19 +13,67 @@ namespace FinanceSim {
 		//members
 		private MainWindow parent;
 		private Profile profile;
+		private bool edit;
 		//constructors
-		internal ProfileView(MainWindow parent, Profile profile) {
+		internal ProfileView(MainWindow parent) {
 			InitializeComponent();
 			this.parent = parent;
-			this.profile = profile;
+			this.profile = null;
+			edit = false;
 		}
 		//methods
 		private void p_goButton_Click(object sender, RoutedEventArgs e) {
-			//if (ValidateProfile()) {
-			//	CompleteProfile();
-			//	parent.ChangeContent(1);
-			//}
-			parent.ChangeContent(1);
+			if (ValidateProfile()) {
+				CompleteProfile();
+				if (edit) {
+					parent.ReturnToTitle();
+				}
+				else {
+					parent.AddProfile(profile);
+					parent.OpenProfile(profile);
+				}
+			}
+		}
+		internal void NewProfile() {
+			this.profile = new Profile();
+		}
+		internal void LoadProfile(Profile newProfile) {
+			//personal
+			this.profile = newProfile;
+			firstNameIn.Text = newProfile.FirstName;
+			lastNameIn.Text = newProfile.LastName;
+			streetAddressIn.Text = newProfile.StreetAddress;
+			apartmentNumberIn.Text = newProfile.ApartmentNumber.ToString();
+			zipCodeIn.Text = newProfile.ZipCode.ToString();
+			birthdayIn.SelectedDate = newProfile.Birthday;
+			//income
+			incomeIn.Text = newProfile.Income.ToString("C");
+			savingsIn.Text = newProfile.Savings.ToString("C");
+			//apartment
+			rentersInsuranceIn.Text = newProfile.RentersInsurance.ToString("C");
+			monthlyRentIn.Text = newProfile.MonthlyRent.ToString("C");
+			//utilities
+			internetIn.Text = newProfile.Internet.ToString("C");
+			heatIn.Text = newProfile.Heat.ToString("C");
+			electricityIn.Text = newProfile.Electricity.ToString("C");
+			waterIn.Text = newProfile.Water.ToString("C");
+			countInternet.IsChecked = newProfile.UtilIncluded[0];
+			countHeat.IsChecked = newProfile.UtilIncluded[1];
+			countElectricity.IsChecked = newProfile.UtilIncluded[2];
+			countWater.IsChecked = newProfile.UtilIncluded[3];
+			//regular bills
+			foreach(CertainFixedPayment cfp in newProfile.RegularBills)
+				regularBills.Items.Add(CreateRegularBillUI(cfp.Name, cfp.GetPayment(), cfp.RefTime));
+			//car
+			carValueIn.Text = newProfile.CarValue.ToString("C");
+			mpgIn.Text = newProfile.MPG.ToString();
+			monthlyCarPaymentIn.Text = newProfile.MonthlyCarPayment.ToString("C");
+			isCarSavingsIn.IsChecked = newProfile.IsCarSavings;
+			//pets
+			dogsIn.Text = newProfile.Dogs.ToString();
+			catsIn.Text = newProfile.Cats.ToString();
+
+			desiredDateIn.SelectedDate = newProfile.DesiredDate;
 		}
 		private void CompleteProfile() {
 			//personal
@@ -70,6 +118,34 @@ namespace FinanceSim {
 					Frequency.MONTHLY_DAY, (uiec[5] as DatePicker).SelectedDate.Value));
 			}
 			return bills;
+		}
+		private UniformGrid CreateRegularBillUI(string name, decimal? payment, DateTime? date) {
+			UniformGrid ug = new UniformGrid();
+			ug.Columns = 6;
+			Label l = new Label();
+			l.Content = "Name:";
+			ug.Children.Add(l);
+			TextBox tb = new TextBox();
+			tb.Text = name;
+			tb.LostFocus += String_LostFocus;
+			ug.Children.Add(tb);
+
+			l = new Label();
+			l.Content = "Payment:";
+			ug.Children.Add(l);
+			tb = new TextBox();
+			tb.Text = payment != null ? payment.Value.ToString("C") : "";
+			tb.LostFocus += Currency_LostFocus;
+			ug.Children.Add(tb);
+
+			l = new Label();
+			l.Content = "Payment Day:";
+			ug.Children.Add(l);
+			DatePicker dp = new DatePicker();
+			dp.SelectedDate = date;
+			dp.LostFocus += DateTime_LostFocus;
+			ug.Children.Add(dp);
+			return ug;
 		}
 		private bool ValidateProfile() {
 			return ValidateText(firstNameIn) & ValidateText(lastNameIn) & ValidateText(streetAddressIn) //personal
@@ -140,30 +216,7 @@ namespace FinanceSim {
 			ValidateDateTime(sender as DatePicker);
 		}
 		private void addBillButton_Click(object sender, RoutedEventArgs e) {
-			UniformGrid ug = new UniformGrid();
-			ug.Columns = 6;
-			Label l = new Label();
-			l.Content = "Name:";
-			ug.Children.Add(l);
-			TextBox tb = new TextBox();
-			tb.LostFocus += String_LostFocus;
-			ug.Children.Add(tb);
-
-			l = new Label();
-			l.Content = "Payment:";
-			ug.Children.Add(l);
-			tb = new TextBox();
-			tb.LostFocus += Currency_LostFocus;
-			ug.Children.Add(tb);
-
-			l = new Label();
-			l.Content = "Payment Day:";
-			ug.Children.Add(l);
-			DatePicker dp = new DatePicker();
-			dp.LostFocus += DateTime_LostFocus;
-			ug.Children.Add(dp);
-
-			regularBills.Items.Add(ug);
+			regularBills.Items.Add(CreateRegularBillUI(null, null, null));
 		}
 		private void removeBillButton_Click(object sender, RoutedEventArgs e) {
 			if(regularBills.SelectedIndex != -1) {

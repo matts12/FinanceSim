@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FinanceSim {
-	class Profile {
+	[Serializable]
+	class Profile : ISerializable {
 		//members
 		//personal
 		private string firstName;
@@ -36,69 +38,71 @@ namespace FinanceSim {
 		//pets
 		private int dogs;
 		private int cats;
-
+		//other
 		private DateTime desiredDate;
+		private DateTime lastOpened;
 		//constructors
-		//test profile
 		internal Profile() {
 			//personal
-			firstName = "Matt";
-			lastName = "Spooner";
-			streetAddress = "26 Shedd Lane";
-			apartmentNumber = 12;
+			firstName = "";
+			lastName = "";
+			streetAddress = "";
+			apartmentNumber = 1;
 			zipCode = 03049;
-			birthday = new DateTime(1998, 3, 12);
+			birthday = DateTime.Today;
 			//income
-			income = 2000m;
-			savings = 500m;
+			income = savings = 0m;
 			//apartment
-			rentersInsurance = 40m;
-			monthlyRent = 1000m;
+			rentersInsurance = monthlyRent = 0m;
 			//utilities
-			internet = 25m;
-			heat = 35m;
-			electricity = water = 0m;
-			utilIncluded = new bool[4] { false, false, true, true };
+			internet = heat = electricity = water = 0m;
+			utilIncluded = new bool[4];
 			//regular bills
 			regularBills = new List<CertainFixedPayment>();
-			regularBills.Add(new CertainFixedPayment("Some things", 4.50m, Frequency.WEEKLY, DateTime.Today));
 			//car
-			carValue = 35000m;
-			monthlyCarPayment = 150m;
-			mpg = 40;
+			carValue = monthlyCarPayment = 0m;
+			mpg = 0;
 			isCarSavings = false;
 			//pets
-			dogs = 0;
-			cats = 1;
-
+			dogs = cats = 0;
+			//others
 			desiredDate = DateTime.Today;
+			lastOpened = DateTime.Now;
+        }
+		internal Profile(SerializationInfo info, StreamingContext context) {
+			//personal
+			firstName = info.GetString("firstName");
+			lastName = info.GetString("lastName");
+			streetAddress = info.GetString("streetAddress");
+			apartmentNumber = info.GetInt32("apartmentNumber");
+			zipCode = info.GetInt32("zipCode");
+			birthday = info.GetDateTime("birthday");
+			//income
+			income = info.GetDecimal("income");
+			savings = info.GetDecimal("savings");
+			//apartment
+			rentersInsurance = info.GetDecimal("rentersInsurance");
+			monthlyRent = info.GetDecimal("monthlyRent");
+			//utilities
+			internet = info.GetDecimal("internet");
+			heat = info.GetDecimal("heat");
+			electricity = info.GetDecimal("electricity");
+			water = info.GetDecimal("water");
+			utilIncluded = info.GetValue("utilIncluded", typeof(bool[])) as bool[];
+			//regular bills
+			regularBills = info.GetValue("regularBills", typeof(List<CertainFixedPayment>)) as List<CertainFixedPayment>;
+			//car
+			carValue = info.GetDecimal("carValue");
+			monthlyCarPayment = info.GetDecimal("monthlyCarPayment");
+			mpg = info.GetInt32("mpg");
+			isCarSavings = info.GetBoolean("isCarSavings");
+			//pets
+			dogs = info.GetInt32("dogs");
+			cats = info.GetInt32("cats");
+			//others
+			desiredDate = info.GetDateTime("desiredDate");
+			lastOpened = info.GetDateTime("lastOpened");
 		}
-		//internal Profile() {
-		//	//personal
-		//	firstName = "";
-		//	lastName = "";
-		//	streetAddress = "";
-		//          apartmentNumber = 1;
-		//	zipCode = 03049;
-		//	birthday = DateTime.Today;
-		//	//income
-		//	income = savings = 0m;
-		//	//apartment
-		//	rentersInsurance = monthlyRent = 0m;
-		//	//utilities
-		//	internet = heat = electricity = water = 0m;
-		//	utilIncluded = new bool[4];
-		//	//regular bills
-		//	regularBills = new List<CertainFixedPayment>();
-		//	//car
-		//	carValue = monthlyCarPayment = 0m;
-		//	mpg = 0;
-		//	isCarSavings = false;
-		//	//pets
-		//	dogs = cats = 0;
-
-		//	desiredDate = DateTime.Today;
-		//}
 		//properties
 		//personal
 		internal string FirstName { get { return firstName; } set { firstName = value; } }
@@ -129,8 +133,43 @@ namespace FinanceSim {
 		//pets
 		internal int Dogs { get { return dogs; } set { dogs = value; } }
 		internal int Cats { get { return cats; } set { cats = value; } }
-
+		//others
 		internal DateTime DesiredDate { get { return desiredDate; } set { desiredDate = value; } }
+		internal DateTime LastOpened { get { return lastOpened; } set { lastOpened = value; } }
 		//methods
+		public void GetObjectData(SerializationInfo info, StreamingContext context) {
+			//personal
+			info.AddValue("firstName", firstName);
+			info.AddValue("lastName", lastName);
+			info.AddValue("streetAddress", streetAddress);
+			info.AddValue("apartmentNumber", apartmentNumber);
+			info.AddValue("zipCode", zipCode);
+			info.AddValue("birthday", birthday);
+			//income
+			info.AddValue("income", income);
+			info.AddValue("savings", savings);
+			//apartment
+			info.AddValue("rentersInsurance", rentersInsurance);
+			info.AddValue("monthlyRent", monthlyRent);
+			//utilities
+			info.AddValue("internet", internet);
+			info.AddValue("heat", heat);
+			info.AddValue("electricity", electricity);
+			info.AddValue("water", water);
+			info.AddValue("utilIncluded", utilIncluded);
+			//regular bills
+			info.AddValue("regularBills", regularBills);
+			//car
+			info.AddValue("carValue", carValue);
+			info.AddValue("monthlyCarPayment", monthlyCarPayment);
+			info.AddValue("mpg", mpg);
+			info.AddValue("isCarSavings", isCarSavings);
+			//pets
+			info.AddValue("dogs", dogs);
+			info.AddValue("cats", cats);
+			//others
+			info.AddValue("desiredDate", desiredDate);
+			info.AddValue("lastOpened", lastOpened);
+		}
 	}
 }

@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 
 namespace FinanceSim {
 	public partial class DataView : Page {
@@ -31,6 +29,7 @@ namespace FinanceSim {
 		}
 		//methods
 		internal void OpenProfile(Profile profile) {
+			profile.LastOpened = DateTime.Now;
 			payments = Payment.GeneratePayments(profile);
 			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			money = profile.Savings;
