@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace FinanceSim {
 	public partial class MainWindow : Window {
@@ -76,6 +78,10 @@ namespace FinanceSim {
 		}
 		internal void EditProfile(int i) {
 			EditProfile(profiles[i]);
+		}
+		internal void DeleteProfile(int i) {
+			profiles.RemoveAt(i);
+			ReturnAndSave();
 		}
 	}
 }

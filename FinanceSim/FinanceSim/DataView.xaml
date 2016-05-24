@@ -7,41 +7,27 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="DataView">
-    <Grid Name="mainGrid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="4*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <StackPanel Name="profilePanel" Grid.Column="0" Background="Aqua">
-
-        </StackPanel>
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-        <DockPanel Name="rightPanel"  Grid.Column="2" Background="Chocolate">
-            <Label Name="dateLabel" FontFamily="Century Gothic" FontSize="18" DockPanel.Dock="Top"/>
-            <Grid DockPanel.Dock="Bottom">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="5"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <StackPanel Name="expensesPanel" Grid.Column="0" Background="Yellow">
-                    <Label>No expenses.</Label>
-                </StackPanel>
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-                <DockPanel Name="innerRightPanel" Grid.Column="2">
-					<Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click" Content="Advance"/>
-                    <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
-                    <Calendar DockPanel.Dock="Top" Name="calendar"/>
-                    <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" Columns="7" Rows="6" Background="Peru"/>
-                </DockPanel>
-            </Grid>
-        </DockPanel>
-    </Grid>
+    <DockPanel Name="mainPanel">
+        <Label Name="dateLabel" FontFamily="Century Gothic" FontSize="18" DockPanel.Dock="Top"/>
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ListView Name="expensesPanel" Grid.Column="0">
+                <Label>No expenses.</Label>
+            </ListView>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+            <DockPanel Name="innerRightPanel" Grid.Column="2">
+                <Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click" Content="Advance"/>
+                <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
+                <Button Name="backButton" DockPanel.Dock="Bottom" Click="backButton_Click">Exit</Button>
+                <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" SizeChanged="calendarGrid_SizeChanged" Columns="7" Rows="6"/>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
 </Page>

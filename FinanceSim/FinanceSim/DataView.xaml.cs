@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace FinanceSim {
 	public partial class DataView : Page {
@@ -13,50 +16,113 @@ namespace FinanceSim {
 		private DateTime date;
 		private decimal money;
 		private List<Payment> payments;
+		private NumberFormatInfo formatInfo;
+		private int highlightedIndex;
+		private Brush prevColor;
 		//constructors
 		internal DataView(MainWindow parent) {
 			InitializeComponent();
+			PreviewKeyDown += DataView_PreviewKeyDown;
 			this.parent = parent;
-			for (int i = 0; i < calendarGrid.Rows * calendarGrid.Columns; i++) {
-				Label l = new Label();
-				l.Content = i;
-				calendarGrid.Children.Add(l);
-			}
-			calendar.IsTodayHighlighted = false;
-			calendar.SelectionMode = CalendarSelectionMode.SingleDate;
-
-			//calendar.SelectedDates.Add(new DateTime(2016, 5, 20));
-		}
+			formatInfo = CultureInfo.CurrentCulture.NumberFormat.Clone() as NumberFormatInfo;
+			formatInfo.CurrencyNegativePattern = 1;
+			highlightedIndex = -1;
+			prevColor = null;
+        }
 		//methods
+		private Label CreateCalendarDate(int day) {
+			Label l = new Label();
+			l.Content = day;
+			l.Background = Brushes.White;
+			l.BorderBrush = Brushes.Black;
+			l.BorderThickness = new Thickness(0.5);
+			return l;
+		}
+		private Label CreateEmptyDate() {
+			return new Label();
+		}
+		private Label CreateTitleLabel(string name) {
+			Label l = new Label();
+			l.Content = name;
+			l.FontSize = 15;
+			l.Background = Brushes.LightGray;
+			l.BorderBrush = Brushes.Black;
+			l.BorderThickness = new Thickness(1.5);
+			l.HorizontalContentAlignment = HorizontalAlignment.Center;
+			l.VerticalContentAlignment = VerticalAlignment.Center;
+			return l;
+		}
+		private void AdjustCalendar() {
+			calendarGrid.Children.Clear();
+			int day = 1;
+			int monthDays = DateTime.DaysInMonth(date.Year, date.Month);
+			string[] dowNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames;
+			string monday = dowNames[(int)DayOfWeek.Monday];
+			foreach(string s in dowNames)
+				calendarGrid.Children.Add(CreateTitleLabel(s));
+            for (int i = 0; day <= monthDays; i++) {
+				if (i - (int)date.DayOfWeek == 0) {
+					highlightedIndex = date.Day + 7 + i - 2;
+				}
+				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
+			}
+			foreach (Payment p in payments) {
+				if(p is CertainFixedPayment) {
+					for (int j = 0; j < monthDays; j++) {
+						if(p.IsDue(new DateTime(date.Year, date.Month, j + 1))) {
+							decimal payment = p.GetPayment();
+							Label l = (calendarGrid.Children[(int)date.DayOfWeek + 7 + j] as Label);
+							Brush newBrush = payment > 0 ? Brushes.LightGreen : Brushes.LightSalmon;
+							if (l.Background.Equals(Brushes.White))
+								l.Background = newBrush;
+							else
+								l.Background = Brushes.LightYellow;
+							l.ToolTip = l.ToolTip == null ? p.Name + "\n" : l.ToolTip + p.Name + "\n";
+						}
+					}
+				}
+			}
+		}
 		internal void OpenProfile(Profile profile) {
 			profile.LastOpened = DateTime.Now;
 			payments = Payment.GeneratePayments(profile);
 			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			money = profile.Savings;
+			AdjustCalendar();
 			DoExpenses();
 		}
+		private void ColorToday() {
+			if (highlightedIndex - 1 >= 0) {
+				(calendarGrid.Children[highlightedIndex - 1] as Label).Background = prevColor;
+			}
+			Label curr = (calendarGrid.Children[highlightedIndex] as Label);
+			prevColor = curr.Background;
+			curr.Background = Brushes.AliceBlue;
+        }
 		private void DoExpenses() {
 			dateLabel.Content = date.ToString("MM/dd/yyyy");
-			expensesPanel.Children.Clear();
+			expensesPanel.Items.Clear();
 			List<ViewablePayment> vPays = GetExpenses();
 			foreach (ViewablePayment vp in vPays) {
 				vp.FontSize = 14;
-				expensesPanel.Children.Add(vp);
+				expensesPanel.Items.Add(vp);
 				money += vp.Bill;
 			}
 			if(vPays.Count == 0) {
 				Label ne = new Label();
 				ne.Content = "No expenses.";
 				ne.FontSize = 14;
-				expensesPanel.Children.Add(ne);
+				expensesPanel.Items.Add(ne);
             }
-			moneyLabel.Content = "Balance: " + money.ToString("C");
+			highlightedIndex++;
+			ColorToday();
+			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
 		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
 			foreach(Payment p in payments) {
 				if (p.IsDue(date)) {
-					vPays.Add(new ViewablePayment(p));
+					vPays.Add(new ViewablePayment(p, formatInfo));
 				}
 			}
 			return vPays;
@@ -65,16 +131,30 @@ namespace FinanceSim {
 			date = date.Add(TimeSpan.FromDays(1));
 			DoExpenses();
 		}
+		private void backButton_Click(object sender, RoutedEventArgs e) {
+			parent.Return();
+		}
+		private void calendarGrid_SizeChanged(object sender, SizeChangedEventArgs e) {
+			double width = calendarGrid.ActualWidth;
+			calendarGrid.Height = width;
+		}
+		private void DataView_PreviewKeyDown(object sender, KeyEventArgs e) {
+			Console.WriteLine("Pressed");
+			if (e.Key.Equals(Key.A) && e.Key.Equals(Key.LeftCtrl)) {
+				//TODO not raising
+				advanceButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+			}
+		}
 	}
 	class ViewablePayment : Label {
 		//members
 		private Payment payment;
 		private decimal bill;
 		//constructors
-		internal ViewablePayment(Payment payment) {
+		internal ViewablePayment(Payment payment, NumberFormatInfo formatInfo) {
 			this.payment = payment;
 			bill = payment.GetPayment();
-			Content = payment.Name + " " + bill.ToString("C");
+			Content = payment.Name + " " + bill.ToString("C", formatInfo);
 		}
 		//properties
 		internal decimal Bill { get { return bill; } }
