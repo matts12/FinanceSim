@@ -34,26 +34,14 @@ namespace FinanceSim {
 		internal static List<Payment> GeneratePayments(Profile profile) {
 			//TODO add payments
 			List<Payment> payments = new List<Payment>();
-			//misc
+			//pay
 			DateTime tuesday = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			while (!tuesday.DayOfWeek.Equals(DayOfWeek.Tuesday))
 				tuesday = tuesday.AddDays(1);
-            payments.Add(new CertainFixedPayment("Paycheck", -1 * profile.Income, Frequency.BI_MONTHLY, tuesday));
-			foreach (CertainFixedPayment cfp in profile.RegularBills)
+            payments.Add(new CertainFixedPayment("Paycheck", -1 * profile.BiPay, Frequency.BI_MONTHLY, tuesday));
+			//other monthlies
+			foreach (CertainFixedPayment cfp in profile.OtherMonthly)
 				payments.Add(cfp);
-			//home
-			payments.Add(new CertainFixedPayment("Apartment Rent", profile.MonthlyRent, Frequency.MONTHLY_DAY, new DateTime(1, 1, 1)));
-			payments.Add(new CertainFixedPayment("Renter's Insurance", profile.RentersInsurance, Frequency.MONTHLY_DAY, RandomDay()));
-			payments.Add(new UncertainRandomPayment("Home Supplies", Frequency.MONTHLY_DAY, 5m, 40m, rand, 2, profile.DesiredDate));
-			//utilities
-			if (!profile.UtilIncluded[0])
-				payments.Add(new CertainFixedPayment("Internet Bill", profile.Internet, Frequency.MONTHLY_DAY, RandomDay()));
-			//TODO heat, electricity
-			if (!profile.UtilIncluded[3])
-				payments.Add(new CertainRandomPayment("Water Bill", profile.Water * .8m, profile.Water * 1.2m, rand, Frequency.MONTHLY_DAY, RandomDay()));
-			//payments.Add(new CertainFixedPayment("Cell Phone Bill", profile.CellPhone, Frequency.MONTHLY_DAY, RandomDay()));
-			//car
-			//payments.Add(new UncertainRandomPayment("Gas", Frequency.MONTHLY_DAY, 0.0, 0.0, rand, 5, profile.DesiredDate));
 			return payments;
 		}
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {

@@ -12,7 +12,7 @@
             <Button Name="cancelButton" Click="cancelButton_Click">Cancel</Button>
             <Button Name="goButton" Click="goButton_Click">Finish</Button>
         </UniformGrid>
-        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Name="viewer" DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center">
                 <Label HorizontalAlignment="Center">Personal</Label>
                 <UniformGrid Columns="4" Rows="3">
@@ -20,77 +20,71 @@
                     <TextBox Name="firstNameIn" LostFocus="String_LostFocus"/>
                     <Label>Last Name:</Label>
                     <TextBox Name="lastNameIn" LostFocus="String_LostFocus"/>
-                    <Label>Street Address:</Label>
-                    <TextBox Name="streetAddressIn" LostFocus="String_LostFocus"/>
-                    <Label>Apartment Number:</Label>
-                    <TextBox Name="apartmentNumberIn" LostFocus="Number_LostFocus"/>
-                    <Label>Zip Code:</Label>
-                    <TextBox Name="zipCodeIn" LostFocus="Number_LostFocus"/>
                     <Label>Birthday:</Label>
                     <DatePicker Name="birthdayIn" LostFocus="DateTime_LostFocus"/>
-                </UniformGrid>
-                <Label HorizontalAlignment="Center">Income</Label>
-                <UniformGrid Rows="1" Columns="4">
                     <Label>Income:</Label>
-                    <TextBox Name="incomeIn" LostFocus="Currency_LostFocus"/>
-                    <Label>Savings:</Label>
-                    <TextBox Name="savingsIn" LostFocus="Currency_LostFocus"/>
+                    <TextBox Name="biPayIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Gender:</Label>
+                    <ComboBox Name="maleIn">
+                        <ComboBoxItem>Male</ComboBoxItem>
+                        <ComboBoxItem>Female</ComboBoxItem>
+                        <ComboBoxItem>Other</ComboBoxItem>
+                    </ComboBox>
                 </UniformGrid>
-                <Label HorizontalAlignment="Center">Apartment</Label>
-                <UniformGrid Columns="4" Rows="1">
-                    <Label>Renter's Insurance:</Label>
-                    <TextBox Name="rentersInsuranceIn" LostFocus="Currency_LostFocus"/>
-                    <Label>Monthly Rent:</Label>
-                    <TextBox Name="monthlyRentIn" LostFocus="Currency_LostFocus"/>
+                <Label HorizontalAlignment="Center">Car</Label>
+                <UniformGrid Rows="3" Columns="4">
+                    <Label>Car Value:</Label>
+                    <TextBox Name="carValueIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Miles on Car:</Label>
+                    <TextBox Name="carMilesIn" LostFocus="Number_LostFocus"/>
+                    <Label>Gas Price per Gallon:</Label>
+                    <TextBox Name="gasRateIn" LostFocus="Currency_LostFocus"/>
+                    <Label>MPG:</Label>
+                    <TextBox Name="mpgIn" LostFocus="Number_LostFocus"/>
+                    <Label>Monthly Payment:</Label>
+                    <TextBox Name="monthlyCarPaymentIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Years on Car:</Label>
+                    <TextBox Name="carYearsIn" LostFocus="Number_LostFocus"/>
                 </UniformGrid>
                 <Label HorizontalAlignment="Center">Utilities</Label>
-                <Label HorizontalAlignment="Center">Check the box to indicate that that utility is included in the rent.</Label>
-                <UniformGrid Columns="4" Rows="2">
-                    <Label>Internet:</Label>
-                    <DockPanel>
-                        <CheckBox Name="countInternet" DockPanel.Dock="Right" VerticalAlignment="Center"/>
-                        <TextBox Name="internetIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
-                    </DockPanel>
-                    <Label>Heat:</Label>
-                    <DockPanel>
-                        <CheckBox Name="countHeat" DockPanel.Dock="Right" VerticalAlignment="Center"/>
-                        <TextBox Name="heatIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
-                    </DockPanel>
-                    <Label>Electricity:</Label>
-                    <DockPanel>
-                        <CheckBox Name="countElectricity" DockPanel.Dock="Right" VerticalAlignment="Center"/>
-                        <TextBox Name="electricityIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
-                    </DockPanel>
-                    <Label>Water:</Label>
-                    <DockPanel>
-                        <CheckBox Name="countWater" DockPanel.Dock="Right" VerticalAlignment="Center"/>
-                        <TextBox Name="waterIn" DockPanel.Dock="Left" LostFocus="Currency_LostFocus"/>
-                    </DockPanel>
+                <UniformGrid Rows="3" Columns="4">
+                    <Label>Cable/Internet:</Label>
+                    <TextBox Name="cableInternetIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Cell Phone:</Label>
+                    <TextBox Name="cellPhoneIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Water Included in Rent?</Label>
+                    <CheckBox Name="incWaterIn" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                    <Label>Electricity Included in Rent?</Label>
+                    <CheckBox Name="incElectricityIn" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                    <Label>Heat Included in Rent?</Label>
+                    <CheckBox Name="incHeatIn" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                </UniformGrid>
+                <Label HorizontalAlignment="Center">Miscellaneous</Label>
+                <UniformGrid Rows="2" Columns="4">
+                    <Label>Pets:</Label>
+                    <TextBox Name="petsIn" LostFocus="Number_LostFocus"/>
+                    <Label>Rent:</Label>
+                    <TextBox Name="rentIn" LostFocus="Currency_LostFocus"/>
+                    <Label>College Loan:</Label>
+                    <TextBox Name="collegeLoanIn" LostFocus="Currency_LostFocus"/>
+                    <Label>Spending Money:</Label>
+                    <TextBox Name="spendingIn" LostFocus="Currency_LostFocus"/>
+                </UniformGrid>
+                <Label HorizontalAlignment="Center">Spending Habits</Label>
+                <UniformGrid Rows="2" Columns="4">
+                    <Label>Days between snacking:</Label>
+                    <TextBox Name="snackFreqIn" LostFocus="Number_LostFocus"/>
+                    <Label>Days between coffee:</Label>
+                    <TextBox Name="coffeeFreqIn" LostFocus="Number_LostFocus"/>
+                    <Label>Digital stuff:</Label>
+                    <TextBox Name="digitalsIn" LostFocus="Number_LostFocus"/>
                 </UniformGrid>
                 <Label HorizontalAlignment="Center">Other Bills</Label>
-                <ListView Name="regularBills" MinHeight="50" MaxHeight="150" MaxWidth="500" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                <ListView Name="otherMonthlyIn" MinHeight="50" MaxHeight="150" MaxWidth="500" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Name="addBillButton" Click="addBillButton_Click" Margin="0,0,50,0" Width="100">Add</Button>
                     <Button Name="removeBillButton" Click="removeBillButton_Click" Margin="50,0,0,0" Width="100">Remove</Button>
-				</StackPanel>
-                <Label HorizontalAlignment="Center">Car</Label>
-                <UniformGrid Columns="4" Rows="2">
-                    <Label>Car Value:</Label>
-                    <TextBox Name="carValueIn" LostFocus="Currency_LostFocus"/>
-                    <Label>MPG:</Label>
-                    <TextBox Name="mpgIn" LostFocus="Number_LostFocus"/>
-                    <Label>Monthly Car Payment:</Label>
-                    <TextBox Name="monthlyCarPaymentIn" LostFocus="Currency_LostFocus"/>
-					<Label/>
-                    <CheckBox Name="isCarSavingsIn" VerticalAlignment="Center">Saving up for a car</CheckBox>
-                </UniformGrid>
-                <Label HorizontalAlignment="Center">Pets</Label>
-                <UniformGrid Columns="4" Rows="1">
-                    <Label>Dogs:</Label>
-                    <TextBox Name="dogsIn" LostFocus="Number_LostFocus"/>
-                    <Label>Cats:</Label>
-                    <TextBox Name="catsIn" LostFocus="Number_LostFocus"/>
-                </UniformGrid>
+                </StackPanel>
                 <Label HorizontalAlignment="Center">Start Date</Label>
 				<DatePicker Name="desiredDateIn" LostFocus="DateTime_LostFocus"/>
             </StackPanel>

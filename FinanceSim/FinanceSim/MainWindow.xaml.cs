@@ -66,6 +66,7 @@ namespace FinanceSim {
 			Return();
 		}
 		internal void Return() {
+			titleView.OpenProfiles(profiles);
 			Content = titleView;
 		}
 		internal void NewProfile() {

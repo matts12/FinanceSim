@@ -62,7 +62,7 @@ namespace FinanceSim {
 				calendarGrid.Children.Add(CreateTitleLabel(s));
             for (int i = 0; day <= monthDays; i++) {
 				if (i - (int)date.DayOfWeek == 0) {
-					highlightedIndex = date.Day + 7 + i - 2;
+					highlightedIndex = 7 + i - 1; //TODO not working on next month
 				}
 				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
 			}
@@ -87,7 +87,7 @@ namespace FinanceSim {
 			profile.LastOpened = DateTime.Now;
 			payments = Payment.GeneratePayments(profile);
 			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
-			money = profile.Savings;
+			money = 0m;
 			AdjustCalendar();
 			DoExpenses();
 		}
@@ -115,6 +115,9 @@ namespace FinanceSim {
 				expensesPanel.Items.Add(ne);
             }
 			highlightedIndex++;
+			if(highlightedIndex == calendarGrid.Children.Count) {
+				AdjustCalendar();
+			}
 			ColorToday();
 			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
 		}

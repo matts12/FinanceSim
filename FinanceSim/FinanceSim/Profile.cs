@@ -12,164 +12,170 @@ namespace FinanceSim {
 		//personal
 		private string firstName;
 		private string lastName;
-		private string streetAddress;
-		private int apartmentNumber;
-		private int zipCode;
 		private DateTime birthday;
-		//income
-		private decimal income;
-		private decimal savings; //TODO he wants?
-		//apartment
-		private decimal rentersInsurance;
-		private decimal monthlyRent;
+		private decimal biPay;
+		private bool? male;
 		//utilities
-		private decimal internet;
-		private decimal heat;
-		private decimal electricity;
-		private decimal water;
-		private bool[] utilIncluded;
+		private decimal cableInternet;
+		private decimal cellPhone;
+		private bool incWater;
+		private bool incElectricity;
+		private bool incHeat;
 		//regular bills
-		private List<CertainFixedPayment> regularBills;
+		private List<CertainFixedPayment> otherMonthly;
 		//car
 		private decimal carValue;
+		private int carMiles;
+		private decimal gasRate;
 		private int mpg;
 		private decimal monthlyCarPayment;
-		private bool isCarSavings;
-		//pets
-		private int dogs;
-		private int cats;
+		private int carYears;
+		//misc
+		private int pets;
+		private decimal rent;
+		private decimal collegeLoan;
+		private decimal spending;
+		//habits
+		private int snackFreq;
+		private int coffeeFreq;
+		private int digitals;
 		//other
 		private DateTime desiredDate;
 		private DateTime lastOpened;
+		private int challengeLevel;
 		//constructors
 		internal Profile() {
 			//personal
 			firstName = "";
 			lastName = "";
-			streetAddress = "";
-			apartmentNumber = 1;
-			zipCode = 03049;
 			birthday = DateTime.Today;
-			//income
-			income = savings = 0m;
-			//apartment
-			rentersInsurance = monthlyRent = 0m;
+			biPay = 0m;
+			male = true;
 			//utilities
-			internet = heat = electricity = water = 0m;
-			utilIncluded = new bool[4];
+			cableInternet = cellPhone = 0m;
+			incWater = incElectricity = incHeat = false;
 			//regular bills
-			regularBills = new List<CertainFixedPayment>();
+			otherMonthly = new List<CertainFixedPayment>();
 			//car
-			carValue = monthlyCarPayment = 0m;
-			mpg = 0;
-			isCarSavings = false;
-			//pets
-			dogs = cats = 0;
-			//others
+			carValue = gasRate = monthlyCarPayment = 0m;
+			carMiles = carYears = mpg = 0;
+			//misc
+			pets = 0;
+			rent = collegeLoan = spending = 0m;
+			//habits
+			snackFreq = coffeeFreq = digitals = 0;
+			//other
 			desiredDate = DateTime.Today;
 			lastOpened = DateTime.Now;
-        }
+			challengeLevel = 0;
+		}
 		internal Profile(SerializationInfo info, StreamingContext context) {
 			//personal
 			firstName = info.GetString("firstName");
 			lastName = info.GetString("lastName");
-			streetAddress = info.GetString("streetAddress");
-			apartmentNumber = info.GetInt32("apartmentNumber");
-			zipCode = info.GetInt32("zipCode");
 			birthday = info.GetDateTime("birthday");
-			//income
-			income = info.GetDecimal("income");
-			savings = info.GetDecimal("savings");
-			//apartment
-			rentersInsurance = info.GetDecimal("rentersInsurance");
-			monthlyRent = info.GetDecimal("monthlyRent");
+			biPay = info.GetDecimal("biPay");
+			male = info.GetValue("male", typeof(bool?)) as bool?;
 			//utilities
-			internet = info.GetDecimal("internet");
-			heat = info.GetDecimal("heat");
-			electricity = info.GetDecimal("electricity");
-			water = info.GetDecimal("water");
-			utilIncluded = info.GetValue("utilIncluded", typeof(bool[])) as bool[];
+			cableInternet = info.GetDecimal("cableInternet");
+			cellPhone = info.GetDecimal("cellPhone");
+			incWater = info.GetBoolean("incWater");
+			incElectricity = info.GetBoolean("incElectricity");
+			incHeat = info.GetBoolean("incHeat");
 			//regular bills
-			regularBills = info.GetValue("regularBills", typeof(List<CertainFixedPayment>)) as List<CertainFixedPayment>;
+			otherMonthly = info.GetValue("otherMonthly", typeof(List<CertainFixedPayment>)) as List<CertainFixedPayment>;
 			//car
 			carValue = info.GetDecimal("carValue");
+			gasRate = info.GetDecimal("gasRate");
 			monthlyCarPayment = info.GetDecimal("monthlyCarPayment");
+			carMiles = info.GetInt32("carMiles");
+			carYears = info.GetInt32("carYears");
 			mpg = info.GetInt32("mpg");
-			isCarSavings = info.GetBoolean("isCarSavings");
-			//pets
-			dogs = info.GetInt32("dogs");
-			cats = info.GetInt32("cats");
-			//others
+			//misc
+			pets = info.GetInt32("pets");
+			rent = info.GetDecimal("rent");
+			collegeLoan = info.GetDecimal("collegeLoan");
+			spending = info.GetDecimal("spending");
+			//habits
+			snackFreq = info.GetInt32("snackFreq");
+			coffeeFreq = info.GetInt32("coffeeFreq");
+			digitals = info.GetInt32("digitals");
+			//other
 			desiredDate = info.GetDateTime("desiredDate");
 			lastOpened = info.GetDateTime("lastOpened");
+			challengeLevel = info.GetInt32("challengeLevel");
 		}
 		//properties
 		//personal
 		internal string FirstName { get { return firstName; } set { firstName = value; } }
 		internal string LastName { get { return lastName; } set { lastName = value; } }
-		internal string StreetAddress { get { return streetAddress; } set { streetAddress = value; } }
-		internal int ApartmentNumber { get { return apartmentNumber; } set { apartmentNumber = value; } }
-		internal int ZipCode { get { return zipCode; } set { zipCode = value; } }
 		internal DateTime Birthday { get { return birthday; } set { birthday = value; } }
-		//income
-		internal decimal Income { get { return income; } set { income = value; } }
-		internal decimal Savings { get { return savings; } set { savings = value; } }
-		//apartment
-		internal decimal RentersInsurance { get { return rentersInsurance; } set { rentersInsurance = value; } }
-		internal decimal MonthlyRent { get { return monthlyRent; } set { monthlyRent = value; } }
+		internal decimal BiPay { get { return biPay; } set { biPay = value; } }
+		internal bool? Male { get { return male; } set { male = value; } }
 		//utilities
-		internal decimal Internet { get { return internet; } set { internet = value; } }
-		internal decimal Heat { get { return heat; } set { heat = value; } }
-		internal decimal Electricity { get { return electricity; } set { electricity = value; } }
-		internal decimal Water { get { return water; } set { water = value; } }
-		internal bool[] UtilIncluded { get { return utilIncluded; } set { utilIncluded = value; } }
+		internal decimal CableInternet { get { return cableInternet; } set { cableInternet = value; } }
+		internal decimal CellPhone { get { return cellPhone; } set { cellPhone = value; } }
+		internal bool IncWater { get { return incWater; } set { incWater = value; } }
+		internal bool IncElectricity { get { return incElectricity; } set { incElectricity = value; } }
+		internal bool IncHeat { get { return incHeat; } set { incHeat = value; } }
 		//regular bills
-		internal List<CertainFixedPayment> RegularBills { get { return regularBills; } set { regularBills = value; } }
+		internal List<CertainFixedPayment> OtherMonthly { get { return otherMonthly; } set { otherMonthly = value; } }
 		//car
 		internal decimal CarValue { get { return carValue; } set { carValue = value; } }
-		internal int MPG { get { return mpg; } set { mpg = value; } }
+		internal decimal GasRate { get { return gasRate; } set { gasRate = value; } }
 		internal decimal MonthlyCarPayment { get { return monthlyCarPayment; } set { monthlyCarPayment = value; } }
-		internal bool IsCarSavings { get { return isCarSavings; } set { isCarSavings = value; } }
-		//pets
-		internal int Dogs { get { return dogs; } set { dogs = value; } }
-		internal int Cats { get { return cats; } set { cats = value; } }
-		//others
+		internal int CarMiles { get { return carMiles; } set { carMiles = value; } }
+		internal int CarYears { get { return carYears; } set { carYears = value; } }
+		internal int MPG { get { return mpg; } set { mpg = value; } }
+		//misc
+		internal int Pets { get { return pets; } set { pets = value; } }
+		internal decimal Rent { get { return rent; } set { rent = value; } }
+		internal decimal CollegeLoan { get { return collegeLoan; } set { collegeLoan = value; } }
+		internal decimal Spending { get { return spending; } set { spending = value; } }
+		//habits
+		internal int SnackFreq { get { return snackFreq; } set { snackFreq = value; } }
+		internal int CoffeeFreq { get { return coffeeFreq; } set { coffeeFreq = value; } }
+		internal int Digitals { get { return digitals; } set { digitals = value; } }
+		//other
 		internal DateTime DesiredDate { get { return desiredDate; } set { desiredDate = value; } }
 		internal DateTime LastOpened { get { return lastOpened; } set { lastOpened = value; } }
+		internal int ChallengeLevel { get { return challengeLevel; } set { challengeLevel = value; } }
 		//methods
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			//personal
 			info.AddValue("firstName", firstName);
 			info.AddValue("lastName", lastName);
-			info.AddValue("streetAddress", streetAddress);
-			info.AddValue("apartmentNumber", apartmentNumber);
-			info.AddValue("zipCode", zipCode);
 			info.AddValue("birthday", birthday);
-			//income
-			info.AddValue("income", income);
-			info.AddValue("savings", savings);
-			//apartment
-			info.AddValue("rentersInsurance", rentersInsurance);
-			info.AddValue("monthlyRent", monthlyRent);
+			info.AddValue("biPay", biPay);
+			info.AddValue("male", male);
 			//utilities
-			info.AddValue("internet", internet);
-			info.AddValue("heat", heat);
-			info.AddValue("electricity", electricity);
-			info.AddValue("water", water);
-			info.AddValue("utilIncluded", utilIncluded);
+			info.AddValue("cableInternet", cableInternet);
+			info.AddValue("cellPhone", cellPhone);
+			info.AddValue("incWater", incWater);
+			info.AddValue("incElectricity", incElectricity);
+			info.AddValue("incHeat", incHeat);
 			//regular bills
-			info.AddValue("regularBills", regularBills);
+			info.AddValue("otherMonthly", otherMonthly);
 			//car
 			info.AddValue("carValue", carValue);
+			info.AddValue("gasRate", gasRate);
 			info.AddValue("monthlyCarPayment", monthlyCarPayment);
+			info.AddValue("carMiles", carMiles);
+			info.AddValue("carYears", carYears);
 			info.AddValue("mpg", mpg);
-			info.AddValue("isCarSavings", isCarSavings);
-			//pets
-			info.AddValue("dogs", dogs);
-			info.AddValue("cats", cats);
-			//others
+			//misc
+			info.AddValue("pets", pets);
+			info.AddValue("rent", rent);
+			info.AddValue("collegeLoan", collegeLoan);
+			info.AddValue("spending", spending);
+			//habits
+			info.AddValue("snackFreq", snackFreq);
+			info.AddValue("coffeeFreq", coffeeFreq);
+			info.AddValue("digitals", digitals);
+			//other
 			info.AddValue("desiredDate", desiredDate);
 			info.AddValue("lastOpened", lastOpened);
+			info.AddValue("challengeLevel", challengeLevel);
 		}
 		public int CompareTo(Profile other) {
 			return lastOpened.CompareTo(other.lastOpened);
