@@ -76,7 +76,7 @@ namespace FinanceSim {
 			cellPhoneIn.Background = Brushes.White;
 			desiredDateIn.SelectedDate = null;
 			desiredDateIn.Background = Brushes.White;
-			//TODO challenge level
+			challengeLevelIn.Value = 1;
 		}
 		internal void NewProfile() {
 			edit = false;
@@ -120,7 +120,7 @@ namespace FinanceSim {
 			digitalsIn.Text = profile.Digitals.ToString();
 			//other
 			desiredDateIn.SelectedDate = profile.DesiredDate;
-			//TODO challenge level
+			challengeLevelIn.Value = profile.ChallengeLevel;
 		}
 		private void CompleteProfile() {
 			//personal

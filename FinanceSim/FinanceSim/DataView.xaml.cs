@@ -19,16 +19,18 @@ namespace FinanceSim {
 		private NumberFormatInfo formatInfo;
 		private int highlightedIndex;
 		private Brush prevColor;
+		private bool doneLoading;
 		//constructors
 		internal DataView(MainWindow parent) {
 			InitializeComponent();
-			PreviewKeyDown += DataView_PreviewKeyDown;
+			Loaded += DataView_Loaded;
 			this.parent = parent;
 			formatInfo = CultureInfo.CurrentCulture.NumberFormat.Clone() as NumberFormatInfo;
 			formatInfo.CurrencyNegativePattern = 1;
 			highlightedIndex = -1;
 			prevColor = null;
-        }
+			doneLoading = false;
+		}
 		//methods
 		private Label CreateCalendarDate(int day) {
 			Label l = new Label();
@@ -57,12 +59,11 @@ namespace FinanceSim {
 			int day = 1;
 			int monthDays = DateTime.DaysInMonth(date.Year, date.Month);
 			string[] dowNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames;
-			string monday = dowNames[(int)DayOfWeek.Monday];
 			foreach(string s in dowNames)
 				calendarGrid.Children.Add(CreateTitleLabel(s));
             for (int i = 0; day <= monthDays; i++) {
 				if (i - (int)date.DayOfWeek == 0) {
-					highlightedIndex = 7 + i - 1; //TODO not working on next month
+					highlightedIndex = 7 + i;
 				}
 				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
 			}
@@ -89,17 +90,17 @@ namespace FinanceSim {
 			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			money = 0m;
 			AdjustCalendar();
-			DoExpenses();
+			DoExpenses(true);
 		}
-		private void ColorToday() {
-			if (highlightedIndex - 1 >= 0) {
+		private void ColorToday(bool colorPrev) {
+			if (colorPrev) {
 				(calendarGrid.Children[highlightedIndex - 1] as Label).Background = prevColor;
 			}
 			Label curr = (calendarGrid.Children[highlightedIndex] as Label);
 			prevColor = curr.Background;
 			curr.Background = Brushes.AliceBlue;
         }
-		private void DoExpenses() {
+		private void DoExpenses(bool first) {
 			dateLabel.Content = date.ToString("MM/dd/yyyy");
 			expensesPanel.Items.Clear();
 			List<ViewablePayment> vPays = GetExpenses();
@@ -114,12 +115,15 @@ namespace FinanceSim {
 				ne.FontSize = 14;
 				expensesPanel.Items.Add(ne);
             }
-			highlightedIndex++;
+			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
+			if(!first)
+				highlightedIndex++;
 			if(highlightedIndex == calendarGrid.Children.Count) {
 				AdjustCalendar();
+				ColorToday(false);
 			}
-			ColorToday();
-			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
+			else
+				ColorToday(!first);
 		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
@@ -132,7 +136,7 @@ namespace FinanceSim {
 		}
 		private void advanceButton_Click(object sender, RoutedEventArgs e) {
 			date = date.Add(TimeSpan.FromDays(1));
-			DoExpenses();
+			DoExpenses(false);
 		}
 		private void backButton_Click(object sender, RoutedEventArgs e) {
 			parent.Return();
@@ -141,12 +145,19 @@ namespace FinanceSim {
 			double width = calendarGrid.ActualWidth;
 			calendarGrid.Height = width;
 		}
+		//wpf
 		private void DataView_PreviewKeyDown(object sender, KeyEventArgs e) {
-			Console.WriteLine("Pressed");
-			if (e.Key.Equals(Key.A) && e.Key.Equals(Key.LeftCtrl)) {
-				//TODO not raising
+			if (Keyboard.IsKeyDown(Key.A) && Keyboard.IsKeyDown(Key.LeftCtrl)) {
 				advanceButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 			}
+		}
+		private void DataView_Loaded(object sender, RoutedEventArgs e) {
+			if (!doneLoading) {
+				PreviewKeyDown += DataView_PreviewKeyDown;
+				doneLoading = true;
+			}
+			Focusable = true;
+			Focus();
 		}
 	}
 	class ViewablePayment : Label {
