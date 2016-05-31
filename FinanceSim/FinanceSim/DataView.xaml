@@ -18,9 +18,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ListView Name="expensesPanel" Grid.Column="0" SelectionMode="Single">
-                <Label>No expenses.</Label>
-            </ListView>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="0">
+                <DockPanel Name="expensesPanel" LastChildFill="False" Background="Aqua"/>
+            </ScrollViewer>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
             <DockPanel Name="innerRightPanel" Grid.Column="2">
                 <Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click" Content="Advance">

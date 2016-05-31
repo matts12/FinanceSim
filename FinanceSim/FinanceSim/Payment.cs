@@ -305,7 +305,6 @@ namespace FinanceSim {
 		}
 		internal override decimal GetPayment(DateTime? day) {
 			return -1 * oriPays[chosens[curr]];
-			
 		}
 	}
 	public delegate int DescriptionSelector(decimal payment, int max);

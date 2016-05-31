@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -103,20 +104,20 @@ namespace FinanceSim {
         }
 		private void DoExpenses(bool first) {
 			dateLabel.Content = date.ToString("MM/dd/yyyy");
-			expensesPanel.Items.Clear();
+			expensesPanel.Children.Clear();
 			List<ViewablePayment> vPays = GetExpenses();
 			foreach (ViewablePayment vp in vPays) {
 				vp.FontSize = 14;
-				expensesPanel.Items.Add(vp);
+				DockPanel.SetDock(vp, Dock.Top);
+				expensesPanel.Children.Add(vp);
 				money += vp.Bill;
 			}
 			if(vPays.Count == 0) {
 				Label ne = new Label();
 				ne.Content = "No expenses.";
 				ne.FontSize = 14;
-				expensesPanel.Items.Add(ne);
+				expensesPanel.Children.Add(ne);
             }
-			expensesPanel.UnselectAll();
 			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
 			if(!first)
 				highlightedIndex++;
@@ -187,8 +188,6 @@ namespace FinanceSim {
 
 			Label cate = new Label();
 			cate.Content = payment.Category;
-			cate.HorizontalContentAlignment = HorizontalAlignment.Right;
-			cate.HorizontalAlignment = HorizontalAlignment.Right;
 			DockPanel.SetDock(cate, Dock.Right);
 			Label desc = new Label();
 			desc.FontStyle = FontStyles.Italic;
@@ -198,13 +197,15 @@ namespace FinanceSim {
 			dp2.Children.Add(desc);
 			dp2.Children.Add(cate);
 			DockPanel.SetDock(dp2, Dock.Bottom);
-			
-			DockPanel sp = new DockPanel();
-			sp.Background = color ? Brushes.LightGray : Brushes.White;
-			sp.HorizontalAlignment = HorizontalAlignment.Stretch;
-			sp.Children.Add(dp);
-			sp.Children.Add(dp2);
-			Content = sp;
+
+			UniformGrid ug = new UniformGrid();
+			ug.HorizontalAlignment = HorizontalAlignment.Stretch;
+			ug.Background = color ? Brushes.LightGray : Brushes.White;
+			ug.Rows = 2;
+			ug.Columns = 1;
+			ug.Children.Add(dp);
+			ug.Children.Add(dp2);
+			Content = ug;
 		}
 		//properties
 		internal decimal Bill { get { return bill; } }

@@ -63,7 +63,12 @@ namespace FinanceSim {
 			payments.Add(new RelativeRandomPayment("Dentist", new Description("Get your teeth cleaned with a visit to the dentist."), "Medical", 69.5m, 139.5m, rand, RandomDay(profile.DesiredDate.Month, profile.DesiredDate.Year), 180));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at doctor's office."), "Medical", 30m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at specialist's office."), "Medical", 40m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
-			//TODO
+			payments.Add(new UncertainAlternatingPayment("Medical Bill", "Medical", Frequency.YEARLY, 2, new decimal[] { 140, 187, 247, 298 }, new string[] {
+				"You have blood tests done",
+				"You have x-rays done",
+				"You have lab tests done",
+				"You visit the hospital"
+			}, profile.DesiredDate, rand));
 			//bad stuff
 			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Very Bad Stuff", Frequency.YEARLY, 2, new decimal[] {
 				215, 219, 225, 240, 243, 299, 280, 300, 310, 368, 199, 450, 375, 675, 650, 900, 1654, 2365, 1000, 4420
@@ -72,15 +77,15 @@ namespace FinanceSim {
 				"Buy a dehumidifier because the moisture is ruining your stuff.",
 				"Computer repairs.At least it's cheaper than a new one.",
 				"A tire was shredded by a piece of metal.Buy a new pair.",
-				"You lost your wallet.Subtract a total of $243 from somewhere in your budget.",
+				"You lost your wallet. Subtract a total of $243 from somewhere in your budget.",
 				"Your went in the ocean with your cell phone.Replace it.Minimum cost shown.",
 				"You accidentally put a hole in the wall and have to pay for repairs.",
 				"Somone backed over your bicylce.Spend at least the amount shown for a new one.",
 				"Your game console is toast.Use the correct price, not the one shown.",
 				"You backed over a neighbor's bicycle. Buy a replacement, please.",
-				"Have a pet ? It just got injured / sick, and guess who gets the vet bill?",
+				"Have a pet? It just got injured / sick, and guess who gets the vet bill?",
 				"Television is fried.Buy a new one.The price shown is a minimun.",
-				"You are a groomsman or bridesmaid.Travel to wedding, and stay in hotel.",
+				"You are a groomsman or bridesmaid. Travel to wedding, and stay in hotel.",
 				"Travel across the country for family issues.",
 				"You cracked a tooth and need a crown.The amount shown is your part of the bill.",
 				"Your laptop stopped working.Find a replacement.The price listed is a minimum.",
