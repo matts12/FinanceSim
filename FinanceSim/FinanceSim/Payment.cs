@@ -15,12 +15,16 @@ namespace FinanceSim {
 		private string desc;
 		private string category;
 		private Frequency freq;
+		private bool lastDue;
+		private decimal lastPayment;
 		//constructors
 		internal Payment(string name, string desc, string category, Frequency freq) {
 			this.name = name;
 			this.desc = desc;
 			this.category = category;
 			this.freq = freq;
+			lastPayment = 0m;
+			lastDue = false;
 		}
 		internal Payment(SerializationInfo info, StreamingContext context) {
 			name = info.GetString("name");
@@ -33,9 +37,11 @@ namespace FinanceSim {
 		internal string Desc { get { return desc; } }
 		internal string Category { get { return category; } }
 		internal Frequency Freq { get { return freq; } }
+		internal decimal LastPayment { get { return lastPayment; } set { lastPayment = value; } }
+		internal bool LastDue { get { return lastDue; } set { lastDue = value; } }
 		//methods
-		internal abstract decimal GetPayment(DateTime? day);
-		internal abstract bool IsDue(DateTime day);
+		internal abstract decimal CalculatePayment(DateTime? day);
+		internal abstract bool CalculateIsDue(DateTime day);
 		internal decimal RandRange(decimal lower, decimal upper, Random rand) {
 			return (decimal)rand.NextDouble() * (upper - lower) + lower;
 		}
@@ -81,6 +87,8 @@ namespace FinanceSim {
 			//TODO different descriptions depending on payment, or randomized
 			//spending $
 			//medical
+			payments.Add(new CertainRandomPayment("Dentist", "Get your teeth cleaned with a visit to the dentist.", "Medical", 6950m, 13950m, rand, Frequency.YEARLY, RandomDay()));
+			//TODO
 			//bad stuff
 			//good stuff
 			//misc
@@ -287,6 +295,30 @@ namespace FinanceSim {
 			string result = Microsoft.VisualBasic.Interaction.InputBox("Enter a Value", "Enter a Value"); //TODO
 			Console.WriteLine(result);
 			return 0m;
+		}
+	}
+	class RelativeRandomPayment : CertainRandomPayment {
+		//members
+		private DateTime nextDue;
+		private int inBetween;
+		private bool requestNew;
+		//constructors
+		internal RelativeRandomPayment(string name, string desc, string category, Frequency freq, decimal lower, decimal upper, Random rand, DateTime refTime, int inBetween) : base(name, desc, category, lower, upper, rand, freq, refTime) {
+			nextDue = refTime;
+			this.inBetween = inBetween;
+			requestNew = false;
+		}
+		//methods
+		internal override bool IsDue(DateTime day) {
+			switch (Freq) {
+				case Frequency.YEARLY: return day.DayOfYear == refTime.DayOfYear;
+				case Frequency.MONTHLY_DAY: return day.Day == refTime.Day;
+				case Frequency.WEEKLY: Console.WriteLine(day.DayOfWeek + " " + refTime.DayOfWeek); return day.DayOfWeek == refTime.DayOfWeek;
+				case Frequency.BI_MONTHLY: return day.DayOfWeek == refTime.DayOfWeek && day.Subtract(refTime).Days % 14 == 0;
+			}
+		}
+		internal override decimal GetPayment(DateTime? day) {
+			return base.GetPayment(day);
 		}
 	}
 }
