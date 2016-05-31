@@ -68,7 +68,7 @@ namespace FinanceSim {
 				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
 			}
 			foreach (Payment p in payments) {
-				if(p is CertainFixedPayment || p is CertainMonthDepPayment) {
+				if(p is CertainFixedPayment || p is CertainMonthDepPayment || p is RelativeRandomPayment) {
 					for (int j = 0; j < monthDays; j++) {
 						DateTime dt = new DateTime(date.Year, date.Month, j + 1);
 						if (p.IsDue(dt)) {
@@ -87,7 +87,7 @@ namespace FinanceSim {
 		}
 		internal void OpenProfile(Profile profile) {
 			profile.LastOpened = DateTime.Now;
-			payments = Payment.GeneratePayments(profile);
+			payments = PaymentManager.GeneratePayments(profile);
 			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			money = 0m;
 			AdjustCalendar();
@@ -116,6 +116,7 @@ namespace FinanceSim {
 				ne.FontSize = 14;
 				expensesPanel.Items.Add(ne);
             }
+			expensesPanel.UnselectAll();
 			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
 			if(!first)
 				highlightedIndex++;
@@ -128,9 +129,11 @@ namespace FinanceSim {
 		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
+			bool color = false;
 			foreach(Payment p in payments) {
 				if (p.IsDue(date)) {
-					vPays.Add(new ViewablePayment(p, date, formatInfo));
+					vPays.Add(new ViewablePayment(p, date, color, formatInfo));
+					color = !color;
 				}
 			}
 			return vPays;
@@ -163,13 +166,45 @@ namespace FinanceSim {
 	}
 	class ViewablePayment : Label {
 		//members
-		private Payment payment;
 		private decimal bill;
 		//constructors
-		internal ViewablePayment(Payment payment, DateTime date, NumberFormatInfo formatInfo) {
-			this.payment = payment;
+		internal ViewablePayment(Payment payment, DateTime date, bool color, NumberFormatInfo formatInfo) {
 			bill = payment.GetPayment(date);
-			Content = payment.Name + " " + bill.ToString("C", formatInfo);
+			Label cost = new Label();
+			cost.Foreground = bill > 0 ? Brushes.Green : Brushes.Red;
+			cost.FontSize = 24;
+			cost.Content = bill.ToString("C", formatInfo);
+			DockPanel.SetDock(cost, Dock.Left);
+			Label title = new Label();
+			title.FontSize = 18;
+			title.FontStyle = FontStyles.Oblique;
+			title.Content = payment.Name;
+			DockPanel.SetDock(title, Dock.Right);
+			DockPanel dp = new DockPanel();
+			dp.Children.Add(cost);
+			dp.Children.Add(title);
+			DockPanel.SetDock(dp, Dock.Top);
+
+			Label cate = new Label();
+			cate.Content = payment.Category;
+			cate.HorizontalContentAlignment = HorizontalAlignment.Right;
+			cate.HorizontalAlignment = HorizontalAlignment.Right;
+			DockPanel.SetDock(cate, Dock.Right);
+			Label desc = new Label();
+			desc.FontStyle = FontStyles.Italic;
+			desc.Content = payment.FindDescription(-1 * bill);
+			DockPanel.SetDock(desc, Dock.Left);
+			DockPanel dp2 = new DockPanel();
+			dp2.Children.Add(desc);
+			dp2.Children.Add(cate);
+			DockPanel.SetDock(dp2, Dock.Bottom);
+			
+			DockPanel sp = new DockPanel();
+			sp.Background = color ? Brushes.LightGray : Brushes.White;
+			sp.HorizontalAlignment = HorizontalAlignment.Stretch;
+			sp.Children.Add(dp);
+			sp.Children.Add(dp2);
+			Content = sp;
 		}
 		//properties
 		internal decimal Bill { get { return bill; } }

@@ -62,6 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PaymentManager.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TitleView.xaml.cs">
       <DependentUpon>TitleView.xaml</DependentUpon>

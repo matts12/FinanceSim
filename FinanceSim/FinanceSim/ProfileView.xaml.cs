@@ -168,7 +168,7 @@ namespace FinanceSim {
 			List<CertainFixedPayment> bills = new List<CertainFixedPayment>();
 			for (int i = 0; i < otherMonthlyIn.Items.Count; i++) {
 				UIElementCollection uiec = (otherMonthlyIn.Items[i] as UniformGrid).Children;
-				bills.Add(new CertainFixedPayment((uiec[1] as TextBox).Text, "A monthly expense.", "Monthly Expense",
+				bills.Add(new CertainFixedPayment((uiec[1] as TextBox).Text, new Description("A monthly expense."), "Monthly Expense",
 					decimal.Parse((uiec[3] as TextBox).Text, NumberStyles.Currency), 
 					Frequency.MONTHLY_DAY, (uiec[5] as DatePicker).SelectedDate.Value));
 			}

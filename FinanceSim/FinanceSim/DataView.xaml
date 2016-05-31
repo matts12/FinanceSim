@@ -18,7 +18,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ListView Name="expensesPanel" Grid.Column="0">
+            <ListView Name="expensesPanel" Grid.Column="0" SelectionMode="Single">
                 <Label>No expenses.</Label>
             </ListView>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>

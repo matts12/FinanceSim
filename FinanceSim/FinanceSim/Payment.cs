@@ -9,91 +9,34 @@ namespace FinanceSim {
 	enum Frequency { YEARLY, MONTHLY_DAY, WEEKLY, BI_MONTHLY }
 	[Serializable]
 	abstract class Payment : ISerializable {
-		private static Random rand = new Random();
 		//members
 		private string name;
-		private string desc;
+		private Description desc;
 		private string category;
 		private Frequency freq;
-		private bool lastDue;
-		private decimal lastPayment;
 		//constructors
-		internal Payment(string name, string desc, string category, Frequency freq) {
+		internal Payment(string name, Description desc, string category, Frequency freq) {
 			this.name = name;
 			this.desc = desc;
 			this.category = category;
 			this.freq = freq;
-			lastPayment = 0m;
-			lastDue = false;
 		}
 		internal Payment(SerializationInfo info, StreamingContext context) {
 			name = info.GetString("name");
-			desc = info.GetString("desc");
+			desc = info.GetValue("desc", typeof(Description)) as Description;
 			category = info.GetString("category");
 			freq = (Frequency)info.GetInt32("freq");
 		}
 		//properties
 		internal string Name { get { return name; } }
-		internal string Desc { get { return desc; } }
 		internal string Category { get { return category; } }
 		internal Frequency Freq { get { return freq; } }
-		internal decimal LastPayment { get { return lastPayment; } set { lastPayment = value; } }
-		internal bool LastDue { get { return lastDue; } set { lastDue = value; } }
 		//methods
-		internal abstract decimal CalculatePayment(DateTime? day);
-		internal abstract bool CalculateIsDue(DateTime day);
+		internal virtual string FindDescription(decimal payment) { return desc.GetValue(payment); }
+		internal abstract decimal GetPayment(DateTime? day);
+		internal abstract bool IsDue(DateTime day);
 		internal decimal RandRange(decimal lower, decimal upper, Random rand) {
 			return (decimal)rand.NextDouble() * (upper - lower) + lower;
-		}
-		//statics
-		private static DateTime RandomDay() {
-			return new DateTime(1, 1, rand.Next(1, 28));
-        }
-		internal static List<Payment> GeneratePayments(Profile profile) {
-			//TODO add payments
-			//TODO apply challenge level
-			List<Payment> payments = new List<Payment>();
-			//pay
-			DateTime tuesday = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
-			while (!tuesday.DayOfWeek.Equals(DayOfWeek.Tuesday))
-				tuesday = tuesday.AddDays(1);
-            payments.Add(new CertainFixedPayment("Paycheck", "Your bi-weekly paycheck is here.", "Income", -1 * profile.BiPay, Frequency.BI_MONTHLY, tuesday));
-			//other monthlies
-			foreach (CertainFixedPayment cfp in profile.OtherMonthly)
-				payments.Add(cfp);
-			//utilities
-			payments.Add(new CertainMonthDepPayment("Heating Bill", "Your heating bill is due.", "Utility", rand, new decimal[] {
-				97, 92, 75, 60, 30, 0, 0, 0, 25, 40, 75, 90
-			}, new decimal[] {
-				15, 15, 10, 10, 3, 0, 0, 0, 5, 10, 10, 15
-			}, Frequency.MONTHLY_DAY, RandomDay()));
-			payments.Add(new CertainMonthDepPayment("Electricity Bill", "Your electricity bill is due.", "Utility", rand, new decimal[] {
-				70, 60, 50, 50, 50, 55, 80, 80, 50, 50, 50, 60, 70, 60, 50
-			}, new decimal[] {
-				10, 5, 5, 5, 5, 10, 15, 15, 10, 5, 5, 10, 10, 5, 5
-			}, Frequency.MONTHLY_DAY, RandomDay()));
-			payments.Add(new CertainMonthDepPayment("Water Bill", "Your water bill is due.", "Utility", rand, new decimal[] {
-				20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
-			}, new decimal[] {
-				7, 7,7,7,7,7,7,7,7,7,7,7
-			}, Frequency.MONTHLY_DAY, RandomDay()));
-			//car
-			//food
-			payments.Add(new UncertainRandomPayment("Buy Food", "You need this to survive.", "Food", Frequency.WEEKLY, 75m, 95m, rand, 1, 1, profile.DesiredDate, 2));
-			payments.Add(new UncertainRandomPayment("Meal Out", "You enjoy a lunch out with friends.", "Food", Frequency.MONTHLY_DAY, 6.5m, 15.5m, rand, 2, 3, profile.DesiredDate));
-			payments.Add(new UncertainRandomPayment("Meal Out", "You enjoy a dinner out with friends.", "Food", Frequency.MONTHLY_DAY, 9.5m, 29.5m, rand, 1, 2, profile.DesiredDate));
-			payments.Add(new UncertainRandomPayment("Snack", "Get a snack to make your hunger go away.", "Food", Frequency.WEEKLY, 1m, 3.95m, rand, profile.SnackFreq/2, profile.SnackFreq, profile.DesiredDate));
-			payments.Add(new UncertainRandomPayment("Coffee", "Start the day with some coffee.", "Food", Frequency.WEEKLY, 1.5m, 3.95m, rand, profile.CoffeeFreq / 2, profile.CoffeeFreq, profile.DesiredDate));
-			//TODO different descriptions depending on payment, or randomized
-			//spending $
-			//medical
-			payments.Add(new CertainRandomPayment("Dentist", "Get your teeth cleaned with a visit to the dentist.", "Medical", 6950m, 13950m, rand, Frequency.YEARLY, RandomDay()));
-			//TODO
-			//bad stuff
-			//good stuff
-			//misc
-
-			return payments;
 		}
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("name", name);
@@ -107,7 +50,7 @@ namespace FinanceSim {
 		//members
 		private DateTime refTime;
 		//constructors
-		internal CertainPayment(string name, string desc, string category, Frequency freq, DateTime refTime) : base(name, desc, category, freq) {
+		internal CertainPayment(string name, Description desc, string category, Frequency freq, DateTime refTime) : base(name, desc, category, freq) {
 			this.refTime = refTime;
 		}
 		internal CertainPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
@@ -135,7 +78,7 @@ namespace FinanceSim {
 		//members
 		private decimal payment;
 		//constructors
-		internal CertainFixedPayment(string name, string desc, string category, decimal payment, Frequency freq, DateTime refTime) 
+		internal CertainFixedPayment(string name, Description desc, string category, decimal payment, Frequency freq, DateTime refTime) 
 			: base(name, desc, category, freq, refTime) {
 			this.payment = payment;
 		}
@@ -154,7 +97,7 @@ namespace FinanceSim {
 		private decimal upper, lower;
 		private Random rand;
 		//constructors
-		internal CertainRandomPayment(string name, string desc, string category, decimal lower, decimal upper, Random rand,
+		internal CertainRandomPayment(string name, Description desc, string category, decimal lower, decimal upper, Random rand,
 			Frequency freq, DateTime refTime) : base(name, desc, category, freq, refTime) {
 			this.upper = upper;
 			this.lower = lower;
@@ -171,7 +114,7 @@ namespace FinanceSim {
 		private decimal[] monthPays;
 		private decimal[] variations;
 		//constructors
-		internal CertainMonthDepPayment(string name, string desc, string category, Random rand, decimal[] monthPays, decimal[] variations,
+		internal CertainMonthDepPayment(string name, Description desc, string category, Random rand, decimal[] monthPays, decimal[] variations,
 			Frequency freq, DateTime refTime) : base(name, desc, category, freq, refTime) {
 			this.rand = rand;
 			this.monthPays = monthPays;
@@ -193,7 +136,7 @@ namespace FinanceSim {
 		private int highAdj;
 		private int minTimes, maxTimes;
 		//constructors
-		internal UncertainPayment(string name, string desc, string category, Frequency freq, int minTimes, int maxTimes, DateTime month, Random rand, int highAdj) 
+		internal UncertainPayment(string name, Description desc, string category, Frequency freq, int minTimes, int maxTimes, DateTime month, Random rand, int highAdj) 
 			: base(name, desc, category, freq) {
 			this.rand = rand;
 			currRand = 0;
@@ -269,11 +212,22 @@ namespace FinanceSim {
 			}
 		}
 	}
+	class UncertainFixedPayment : UncertainPayment {
+		//members
+		private decimal payment;
+		//constructors
+		internal UncertainFixedPayment(string name, Description desc, string category, decimal payment, Frequency freq, int minTimes, 
+			int maxTimes, DateTime refTime, Random rand) : base(name, desc, category, freq, minTimes, maxTimes, refTime, rand, 0) {
+			this.payment = payment;
+		}
+		//methods
+		internal override decimal GetPayment(DateTime? day) { return -payment; }
+	}
 	class UncertainRandomPayment : UncertainPayment {
 		//members
 		private decimal upper, lower;
 		//constructors
-		internal UncertainRandomPayment(string name, string desc, string category, Frequency freq, decimal lower, decimal upper,
+		internal UncertainRandomPayment(string name, Description desc, string category, Frequency freq, decimal lower, decimal upper,
 			Random rand, int minTimes, int maxTimes, DateTime month, int highAdj = 0) : base(name, desc, category, freq, minTimes, maxTimes, month, rand, highAdj) {
 			this.upper = upper;
 			this.lower = lower;
@@ -285,40 +239,105 @@ namespace FinanceSim {
 	}
 	class UncertainInputPayment : UncertainPayment {
 		//members
+		private decimal input;
 		//constructors
-		internal UncertainInputPayment(string name, string desc, string category, Frequency freq, int minTimes, int maxTimes, 
+		internal UncertainInputPayment(string name, Description desc, string category, Frequency freq, int minTimes, int maxTimes, 
 			DateTime month, Random rand, int highAdj = 0) : base(name, desc, category, freq, minTimes, maxTimes, month, rand, highAdj) {
-
+			input = decimal.MinValue;
 		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
-			string result = Microsoft.VisualBasic.Interaction.InputBox("Enter a Value", "Enter a Value"); //TODO
-			Console.WriteLine(result);
-			return 0m;
+			if (input.Equals(decimal.MinValue)) {
+				string result = Microsoft.VisualBasic.Interaction.InputBox("Enter a Value", "Enter a Value"); //TODO
+				Console.WriteLine(result);
+			}
+			return input;
 		}
 	}
 	class RelativeRandomPayment : CertainRandomPayment {
 		//members
-		private DateTime nextDue;
 		private int inBetween;
-		private bool requestNew;
 		//constructors
-		internal RelativeRandomPayment(string name, string desc, string category, Frequency freq, decimal lower, decimal upper, Random rand, DateTime refTime, int inBetween) : base(name, desc, category, lower, upper, rand, freq, refTime) {
-			nextDue = refTime;
+		internal RelativeRandomPayment(string name, Description desc, string category, decimal lower, decimal upper, Random rand, DateTime refTime, int inBetween) 
+			: base(name, desc, category, lower, upper, rand, Frequency.YEARLY, refTime) {
 			this.inBetween = inBetween;
-			requestNew = false;
 		}
 		//methods
 		internal override bool IsDue(DateTime day) {
-			switch (Freq) {
-				case Frequency.YEARLY: return day.DayOfYear == refTime.DayOfYear;
-				case Frequency.MONTHLY_DAY: return day.Day == refTime.Day;
-				case Frequency.WEEKLY: Console.WriteLine(day.DayOfWeek + " " + refTime.DayOfWeek); return day.DayOfWeek == refTime.DayOfWeek;
-				case Frequency.BI_MONTHLY: return day.DayOfWeek == refTime.DayOfWeek && day.Subtract(refTime).Days % 14 == 0;
+			return day.Subtract(RefTime).TotalDays % inBetween == 0;
+		}
+	}
+	class UncertainAlternatingPayment : UncertainPayment {
+		//members
+		private decimal[] oriPays;
+		private string[] oriDescs;
+		private int[] chosens;
+		private int curr;
+		//constructors
+		internal UncertainAlternatingPayment(string name, string category, Frequency freq, int times, decimal[] pays, string[] descs,
+			DateTime refTime, Random rand) : base(name, null, category, freq, times, times, refTime, rand, 0) {
+			oriPays = pays;
+			oriDescs = descs;
+			GenerateRandIndexes(times);
+		}
+		//methods
+		private void GenerateRandIndexes(int size) {
+			curr = 0;
+			List<int> indexes = new List<int>();
+			for (int i = 0; i < size; i++) {
+				int j = -1;
+				do {
+					j = Rand.Next(0, oriPays.Length - 1);
+				} while (indexes.Contains(j));
+				indexes.Add(j);
 			}
+			chosens = indexes.ToArray();
+		}
+		internal override string FindDescription(decimal payment) {
+			string desc = oriDescs[chosens[curr]];
+			if (curr + 1 == chosens.Length) {
+				GenerateRandIndexes(chosens.Length);
+			}
+			else {
+				curr++;
+			}
+			return desc;
 		}
 		internal override decimal GetPayment(DateTime? day) {
-			return base.GetPayment(day);
+			return -1 * oriPays[chosens[curr]];
+			
+		}
+	}
+	public delegate int DescriptionSelector(decimal payment, int max);
+	[Serializable]
+	class Description : ISerializable {
+		private static DescriptionSelector defSelect = (payment, max) => new Random().Next(0, max);
+		//members
+		private string[] descs;
+		private DescriptionSelector selector;
+		//constructors
+		internal Description(string s){
+			descs = new string[] { s };
+			selector = null;
+		}
+		internal Description(params string[] descs) {
+			this.descs = descs;
+			selector = defSelect;
+		}
+		internal Description(DescriptionSelector selector, params string[] descs) {
+			this.descs = descs;
+			this.selector = selector;
+		}
+		public Description(SerializationInfo info, StreamingContext context) {
+			descs = info.GetValue("descs", typeof(string[])) as string[];
+			selector = null;
+		}
+		//methods
+		internal string GetValue(decimal payment) {
+			return descs[selector == null ? 0 : selector(payment, descs.Length - 1)];
+		}
+		public void GetObjectData(SerializationInfo info, StreamingContext context) {
+			info.AddValue("descs", descs);
 		}
 	}
 }
