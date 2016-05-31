@@ -86,8 +86,13 @@
                     <Button Name="removeBillButton" Click="removeBillButton_Click" Margin="50,0,0,0" Width="100">Remove</Button>
                 </StackPanel>
                 <Label HorizontalAlignment="Center">Difficulty Level</Label>
-                <Slider Name="challengeLevelIn" Orientation="Horizontal" Maximum="5" Minimum="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1"/>
-                <Label HorizontalAlignment="Center">Start Date</Label>
+                <Slider Name="challengeLevelIn" Orientation="Horizontal" Maximum="3" Minimum="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1"/>
+                <DockPanel>
+                    <Label DockPanel.Dock="Left">Easy</Label>
+                    <Label DockPanel.Dock="Right">Hard</Label>
+                    <Label HorizontalAlignment="Center" >Medium</Label>
+                </DockPanel>
+				<Label HorizontalAlignment="Center">Start Date</Label>
 				<DatePicker Name="desiredDateIn" LostFocus="DateTime_LostFocus"/>
             </StackPanel>
         </ScrollViewer>

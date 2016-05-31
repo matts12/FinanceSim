@@ -68,13 +68,14 @@ namespace FinanceSim {
 				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
 			}
 			foreach (Payment p in payments) {
-				if(p is CertainFixedPayment) {
+				if(p is CertainFixedPayment || p is CertainMonthDepPayment) {
 					for (int j = 0; j < monthDays; j++) {
-						if(p.IsDue(new DateTime(date.Year, date.Month, j + 1))) {
-							decimal payment = p.GetPayment();
+						DateTime dt = new DateTime(date.Year, date.Month, j + 1);
+						if (p.IsDue(dt)) {
+							decimal payment = p.GetPayment(dt);
 							Label l = (calendarGrid.Children[(int)date.DayOfWeek + 7 + j] as Label);
 							Brush newBrush = payment > 0 ? Brushes.LightGreen : Brushes.LightSalmon;
-							if (l.Background.Equals(Brushes.White))
+							if (l.Background.Equals(Brushes.White) || l.Background.Equals(newBrush))
 								l.Background = newBrush;
 							else
 								l.Background = Brushes.LightYellow;
@@ -129,7 +130,7 @@ namespace FinanceSim {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
 			foreach(Payment p in payments) {
 				if (p.IsDue(date)) {
-					vPays.Add(new ViewablePayment(p, formatInfo));
+					vPays.Add(new ViewablePayment(p, date, formatInfo));
 				}
 			}
 			return vPays;
@@ -165,9 +166,9 @@ namespace FinanceSim {
 		private Payment payment;
 		private decimal bill;
 		//constructors
-		internal ViewablePayment(Payment payment, NumberFormatInfo formatInfo) {
+		internal ViewablePayment(Payment payment, DateTime date, NumberFormatInfo formatInfo) {
 			this.payment = payment;
-			bill = payment.GetPayment();
+			bill = payment.GetPayment(date);
 			Content = payment.Name + " " + bill.ToString("C", formatInfo);
 		}
 		//properties

@@ -82,6 +82,8 @@ namespace FinanceSim {
 			edit = false;
 			Clear();
 			this.profile = new Profile();
+			otherMonthlyIn.Items.Add(CreateRegularBillUI("Netflix", null, null));
+			otherMonthlyIn.Items.Add(CreateRegularBillUI("Gym", null, null));
 		}
 		internal void LoadProfile(Profile newProfile) {
 			edit = true;
@@ -101,7 +103,7 @@ namespace FinanceSim {
 			incHeatIn.IsChecked = profile.IncHeat;
 			//regular bills
 			foreach (CertainFixedPayment cfp in newProfile.OtherMonthly)
-				otherMonthlyIn.Items.Add(CreateRegularBillUI(cfp.Name, -1 * cfp.GetPayment(), cfp.RefTime));
+				otherMonthlyIn.Items.Add(CreateRegularBillUI(cfp.Name, -1 * cfp.GetPayment(null), cfp.RefTime));
 			//car
 			carValueIn.Text = profile.CarValue.ToString("C");
 			carMilesIn.Text = profile.CarMiles.ToString();
@@ -160,13 +162,13 @@ namespace FinanceSim {
 			profile.Digitals = int.Parse(digitalsIn.Text);
 			//other
 			profile.DesiredDate = desiredDateIn.SelectedDate.Value;
-			//TODO challenge level
+			profile.ChallengeLevel = (int)challengeLevelIn.Value;
 		}
 		private List<CertainFixedPayment> GenerateOtherBills() {
 			List<CertainFixedPayment> bills = new List<CertainFixedPayment>();
 			for (int i = 0; i < otherMonthlyIn.Items.Count; i++) {
 				UIElementCollection uiec = (otherMonthlyIn.Items[i] as UniformGrid).Children;
-				bills.Add(new CertainFixedPayment((uiec[1] as TextBox).Text, 
+				bills.Add(new CertainFixedPayment((uiec[1] as TextBox).Text, "A monthly expense.", "Monthly Expense",
 					decimal.Parse((uiec[3] as TextBox).Text, NumberStyles.Currency), 
 					Frequency.MONTHLY_DAY, (uiec[5] as DatePicker).SelectedDate.Value));
 			}
@@ -192,7 +194,7 @@ namespace FinanceSim {
 			ug.Children.Add(tb);
 
 			l = new Label();
-			l.Content = "Payment Day:";
+			l.Content = "Payment Day:"; //TODO replace
 			ug.Children.Add(l);
 			DatePicker dp = new DatePicker();
 			dp.SelectedDate = date;
@@ -211,7 +213,6 @@ namespace FinanceSim {
 				& ValidateCurrency(spendingIn)
 				& ValidateNumber(snackFreqIn) & ValidateNumber(coffeeFreqIn) & ValidateNumber(digitalsIn) //habits
 				& ValidateDateTime(desiredDateIn); //other
-				//TODO challenge level
 		}
 		private bool ValidateCustoms() {
 			bool valid = true;
