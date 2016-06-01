@@ -9,6 +9,9 @@ namespace FinanceSim {
 		private static Random rand = new Random();
 		//statics
 		private static DateTime RandomDay(int month = 1, int year = 1) {
+			while(month > 12) {
+				month -= 12;
+			}
 			return new DateTime(year, month, rand.Next(1, 28));
 		}
 		internal static List<Payment> GeneratePayments(Profile profile) {
@@ -40,6 +43,8 @@ namespace FinanceSim {
 				7, 7,7,7,7,7,7,7,7,7,7,7
 			}, Frequency.MONTHLY_DAY, RandomDay()));
 			//car
+			payments.Add(new RelativeRandomPayment("Car Insurance", new Description("Your car insurance is due."), "Car", 462.67m, 551.23m, rand, RandomDay(profile.DesiredDate.Month + 2, profile.DesiredDate.Year), 180));
+			payments.Add(new CertainFixedPayment("Tires", new Description("Your car needs new tires"), "Car", 875m, Frequency.YEARLY, RandomDay(profile.DesiredDate.Month + 3, profile.DesiredDate.Year)));
 			//TODO
 			//food
 			payments.Add(new UncertainRandomPayment("Food", new Description("You need this to survive."), "Food", Frequency.WEEKLY, 75m, 95m, rand, 1, 1, profile.DesiredDate, 2));
@@ -60,7 +65,7 @@ namespace FinanceSim {
 			//spending $
 			//TODO
 			//medical
-			payments.Add(new RelativeRandomPayment("Dentist", new Description("Get your teeth cleaned with a visit to the dentist."), "Medical", 69.5m, 139.5m, rand, RandomDay(profile.DesiredDate.Month, profile.DesiredDate.Year), 180));
+			payments.Add(new RelativeRandomPayment("Dentist", new Description("Get your teeth cleaned with a visit to the dentist."), "Medical", 69.5m, 139.5m, rand, RandomDay(profile.DesiredDate.Month + 1, profile.DesiredDate.Year), 180));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at doctor's office."), "Medical", 30m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at specialist's office."), "Medical", 40m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
 			payments.Add(new UncertainAlternatingPayment("Medical Bill", "Medical", Frequency.YEARLY, 2, new decimal[] { 140, 187, 247, 298 }, new string[] {
@@ -155,11 +160,44 @@ namespace FinanceSim {
 				"You cashed in your change jar.",
 				"You found some money you didn't know you had in a drawer."
 			}, profile.DesiredDate, rand));
-			//payments.Add(new CertainRandomPayment("Birthday Money", "Happy Birthday, " + profile.FirstName + ". Your Uncle Ferdinand has given you some money.", "Good stuff", 1m, 100m,))
-			//TODO
+			Description birthdayDesc = new Description(
+				"Happy Birthday, " + profile.FirstName + ". Your Mom has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Dad has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Uncle Henry has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Grandpa Gerswhin has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Grandma Lois has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Uncle Ferdinand has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Aunt Florence has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Uncle Bertram has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Aunt Michele has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Uncle Wayne has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Grandma Bella has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Grandpa Paul has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Aunt Emma has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Uncle Christian has given you some money.",
+				"Happy Birthday, " + profile.FirstName + ". Your Mr. I has given you some money."
+				);
+            payments.Add(new CertainRandomPayment("Birthday Money", birthdayDesc, "Good stuff", -1m, -100m, rand, Frequency.YEARLY, profile.Birthday));
+			payments.Add(new CertainRandomPayment("Birthday Money", birthdayDesc, "Good stuff", -1m, -100m, rand, Frequency.YEARLY, profile.Birthday));
+			payments.Add(new CertainRandomPayment("Christmas Money", new Description(
+				"Happy Holidays, " + profile.FirstName + ". Your Mom has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Dad has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Uncle Henry has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Grandpa Gerswhin has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Grandma Lois has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Uncle Ferdinand has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Aunt Florence has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Uncle Bertram has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Aunt Michele has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Uncle Wayne has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Grandma Bella has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Grandpa Paul has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Aunt Emma has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Uncle Christian has given you some money.",
+				"Happy Holidays, " + profile.FirstName + ". Your Mr. I has given you some money."
+				), "Good stuff", -50m, -200m, rand, Frequency.YEARLY, new DateTime(profile.DesiredDate.Year, 12, 25)));
 			//misc
 			//TODO
-
 			return payments;
 		}
 	}

@@ -26,6 +26,7 @@ namespace FinanceSim {
 			profiles = LoadProfiles();
 			titleView.OpenProfiles(profiles);
 			Content = titleView;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 		}
 		//methods
 		internal void OpenProfile(int i) {
@@ -83,6 +84,9 @@ namespace FinanceSim {
 		internal void DeleteProfile(int i) {
 			profiles.RemoveAt(i);
 			ReturnAndSave();
+		}
+		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+			Console.WriteLine((e.ExceptionObject as Exception).Message);
 		}
 	}
 }

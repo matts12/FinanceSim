@@ -310,7 +310,8 @@ namespace FinanceSim {
 	public delegate int DescriptionSelector(decimal payment, int max);
 	[Serializable]
 	class Description : ISerializable {
-		private static DescriptionSelector defSelect = (payment, max) => new Random().Next(0, max);
+		private static Random rand = new Random();
+		private static DescriptionSelector defSelect = (payment, max) => rand.Next(0, max);
 		//members
 		private string[] descs;
 		private DescriptionSelector selector;

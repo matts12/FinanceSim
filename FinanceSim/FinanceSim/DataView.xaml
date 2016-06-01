@@ -19,7 +19,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="0">
-                <DockPanel Name="expensesPanel" LastChildFill="False" Background="Aqua"/>
+                <StackPanel Name="expensesPanel" Background="Aqua"/>
             </ScrollViewer>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
             <DockPanel Name="innerRightPanel" Grid.Column="2">

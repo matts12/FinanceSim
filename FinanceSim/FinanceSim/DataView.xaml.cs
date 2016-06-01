@@ -69,7 +69,7 @@ namespace FinanceSim {
 				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
 			}
 			foreach (Payment p in payments) {
-				if(p is CertainFixedPayment || p is CertainMonthDepPayment || p is RelativeRandomPayment) {
+				if(p is CertainFixedPayment || p is CertainMonthDepPayment || p is RelativeRandomPayment || p is CertainRandomPayment) {
 					for (int j = 0; j < monthDays; j++) {
 						DateTime dt = new DateTime(date.Year, date.Month, j + 1);
 						if (p.IsDue(dt)) {
@@ -171,6 +171,9 @@ namespace FinanceSim {
 		//constructors
 		internal ViewablePayment(Payment payment, DateTime date, bool color, NumberFormatInfo formatInfo) {
 			bill = payment.GetPayment(date);
+			HorizontalAlignment = HorizontalAlignment.Stretch;
+			HorizontalContentAlignment = HorizontalAlignment.Stretch;
+			Background = color ? Brushes.LightGray : Brushes.White;
 			Label cost = new Label();
 			cost.Foreground = bill > 0 ? Brushes.Green : Brushes.Red;
 			cost.FontSize = 24;
@@ -180,6 +183,7 @@ namespace FinanceSim {
 			title.FontSize = 18;
 			title.FontStyle = FontStyles.Oblique;
 			title.Content = payment.Name;
+			title.HorizontalContentAlignment = HorizontalAlignment.Right;
 			DockPanel.SetDock(title, Dock.Right);
 			DockPanel dp = new DockPanel();
 			dp.Children.Add(cost);
@@ -188,19 +192,20 @@ namespace FinanceSim {
 
 			Label cate = new Label();
 			cate.Content = payment.Category;
+			cate.HorizontalContentAlignment = HorizontalAlignment.Right;
 			DockPanel.SetDock(cate, Dock.Right);
-			Label desc = new Label();
+			TextBlock desc = new TextBlock();
 			desc.FontStyle = FontStyles.Italic;
-			desc.Content = payment.FindDescription(-1 * bill);
+			desc.Text = payment.FindDescription(-1 * bill);
+			desc.TextWrapping = TextWrapping.WrapWithOverflow;
 			DockPanel.SetDock(desc, Dock.Left);
 			DockPanel dp2 = new DockPanel();
-			dp2.Children.Add(desc);
 			dp2.Children.Add(cate);
+			dp2.Children.Add(desc);
 			DockPanel.SetDock(dp2, Dock.Bottom);
 
 			UniformGrid ug = new UniformGrid();
 			ug.HorizontalAlignment = HorizontalAlignment.Stretch;
-			ug.Background = color ? Brushes.LightGray : Brushes.White;
 			ug.Rows = 2;
 			ug.Columns = 1;
 			ug.Children.Add(dp);
