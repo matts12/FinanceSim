@@ -61,7 +61,7 @@ namespace FinanceSim {
 		//methods
 		internal override bool IsDue(DateTime day) {
 			switch (Freq) {
-				case Frequency.YEARLY: return day.DayOfYear == refTime.DayOfYear;
+				case Frequency.YEARLY: return (DateTime.IsLeapYear(day.Year) ? day.DayOfYear - 1 : day.DayOfYear) == (DateTime.IsLeapYear(refTime.Year) ? refTime.DayOfYear - 1 : refTime.DayOfYear);
 				case Frequency.MONTHLY_DAY: return day.Day == refTime.Day;
 				case Frequency.WEEKLY: Console.WriteLine(day.DayOfWeek + " " + refTime.DayOfWeek); return day.DayOfWeek == refTime.DayOfWeek;
 				case Frequency.BI_MONTHLY: return day.DayOfWeek == refTime.DayOfWeek && day.Subtract(refTime).Days % 14 == 0;
@@ -248,8 +248,9 @@ namespace FinanceSim {
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			if (input.Equals(decimal.MinValue)) {
-				string result = Microsoft.VisualBasic.Interaction.InputBox("Enter a Value", "Enter a Value"); //TODO
-				Console.WriteLine(result);
+				input = new InputDialog().GetValue(); //TODO
+				//string result = Microsoft.VisualBasic.Interaction.InputBox("Enter a Value", "Enter a Value"); //TODO
+				//Console.WriteLine(result);
 			}
 			return input;
 		}

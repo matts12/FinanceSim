@@ -43,8 +43,9 @@ namespace FinanceSim {
 				7, 7,7,7,7,7,7,7,7,7,7,7
 			}, Frequency.MONTHLY_DAY, RandomDay()));
 			//car
-			payments.Add(new RelativeRandomPayment("Car Insurance", new Description("Your car insurance is due."), "Car", 462.67m, 551.23m, rand, RandomDay(profile.DesiredDate.Month + 2, profile.DesiredDate.Year), 180));
-			payments.Add(new CertainFixedPayment("Tires", new Description("Your car needs new tires"), "Car", 875m, Frequency.YEARLY, RandomDay(profile.DesiredDate.Month + 3, profile.DesiredDate.Year)));
+			payments.Add(new RelativeRandomPayment("Car Insurance", new Description("Bi-annual car insurance premium."), "Car", 462.67m, 551.23m, rand, RandomDay(profile.DesiredDate.Month + 2, profile.DesiredDate.Year), 180));
+			payments.Add(new CertainFixedPayment("Tires", new Description("Looks like you need new tires!"), "Car", 875m, Frequency.YEARLY, RandomDay(profile.DesiredDate.Month + 3, profile.DesiredDate.Year)));
+			payments.Add(new CertainFixedPayment("Registration", new Description("Pay for car registration this month."), "Car", (decimal)((profile.CarYears < 5 ? 1.5 - .24 * profile.CarYears : .25) * (double)profile.CarValue / 100.0 + 50), Frequency.YEARLY, new DateTime(profile.DesiredDate.Year, profile.Birthday.Month, 1)));
 			//TODO
 			//food
 			payments.Add(new UncertainRandomPayment("Food", new Description("You need this to survive."), "Food", Frequency.WEEKLY, 75m, 95m, rand, 1, 1, profile.DesiredDate, 2));
