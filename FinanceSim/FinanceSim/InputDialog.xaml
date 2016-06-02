@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FinanceSim"
         mc:Ignorable="d"
-        Title="User Input" Height="150" Width="350" WindowStyle="ToolWindow" 
+        Title="User Input" Height="200" Width="500" WindowStyle="ToolWindow" 
 		ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
     <StackPanel>
-        <TextBlock Name="descBlock" Margin="5" TextWrapping="WrapWithOverflow"/>
-        <TextBox Name="inputBox" Margin="5" KeyDown="inputBox_KeyDown" LostFocus="inputBox_LostFocus"/>
-        <Label Name="spendingLabel" Foreground="Red"/>
-        <Button Name="okButton" Margin="5" Click="okButton_Click">OK</Button>
+        <TextBlock Name="descBlock" Margin="5" FontSize="24" TextWrapping="WrapWithOverflow"/>
+        <TextBox FontSize="14" Name="inputBox" Margin="5" KeyDown="inputBox_KeyDown" LostFocus="inputBox_LostFocus"/>
+        <Label FontSize="16" Name="spendingLabel" Foreground="Red"/>
+        <Button Name="okButton" MaxWidth="100" Margin="5" Click="okButton_Click">OK</Button>
     </StackPanel>
 </Window>

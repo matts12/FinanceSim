@@ -83,11 +83,23 @@ namespace FinanceSim {
 								l.Background = newBrush;
 							else
 								l.Background = Brushes.LightYellow;
-							l.ToolTip = l.ToolTip == null ? p.Name + "\n" : l.ToolTip + p.Name + "\n";
+							if(l.ToolTip == null) {
+								l.ToolTip = CreateCalTool(p.Name);
+							}
+							else {
+								(l.ToolTip as Label).Content += "\n" + p.Name;
+                            }
 						}
 					}
 				}
 			}
+		}
+		private Label CreateCalTool(string content) {
+			Label l = new Label();
+			l.FontStyle = FontStyles.Italic;
+			l.FontSize = 16;
+			l.Content = content;
+			return l;
 		}
 		internal void OpenProfile(Profile profile) {
 			profile.LastOpened = DateTime.Now;
@@ -107,7 +119,7 @@ namespace FinanceSim {
 			curr.Background = Brushes.AliceBlue;
         }
 		private void DoExpenses(bool first) {
-			dateLabel.Content = date.ToString("MM/dd/yyyy");
+			dateLabel.Content = date.ToString("dddd, MMMM dd, yyyy");
 			expensesPanel.Children.Clear();
 			List<ViewablePayment> vPays = GetExpenses();
 			foreach (ViewablePayment vp in vPays) {
@@ -123,7 +135,8 @@ namespace FinanceSim {
 			if(vPays.Count == 0) {
 				Label ne = new Label();
 				ne.Content = "No expenses.";
-				ne.FontSize = 14;
+				ne.FontWeight = FontWeights.SemiBold;
+				ne.FontSize = 24;
 				expensesPanel.Children.Add(ne);
             }
 			if(!first)
@@ -135,8 +148,10 @@ namespace FinanceSim {
 			}
 			else
 				ColorToday(!first);
-			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
-			spendingLabel.Content = "Spending money:" + spendingMoney.ToString("C", formatInfo);
+			moneyLabel.Content = money.ToString("C", formatInfo);
+			moneyLabel.Foreground = money > 0 ? Brushes.Green : Brushes.Red;
+			spendingLabel.Content = spendingMoney.ToString("C", formatInfo);
+			spendingLabel.Foreground = spendingMoney > 0 ? Brushes.Green : Brushes.Red;
 		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
@@ -188,12 +203,12 @@ namespace FinanceSim {
 			Background = color ? Brushes.LightGray : Brushes.White;
 			Label cost = new Label();
 			cost.Foreground = bill > 0 ? Brushes.Green : Brushes.Red;
-			cost.FontSize = 24;
+			cost.FontSize = 28;
 			cost.Content = bill.ToString("C", formatInfo);
 			DockPanel.SetDock(cost, Dock.Left);
 			Label title = new Label();
-			title.FontSize = 18;
-			title.FontStyle = FontStyles.Oblique;
+			title.FontSize = 24;
+			title.FontWeight = FontWeights.ExtraBold;
 			title.Content = payment.Name;
 			title.HorizontalContentAlignment = HorizontalAlignment.Right;
 			DockPanel.SetDock(title, Dock.Right);
@@ -201,18 +216,14 @@ namespace FinanceSim {
 			dp.Children.Add(cost);
 			dp.Children.Add(title);
 			DockPanel.SetDock(dp, Dock.Top);
-			if (isSpending) {
-				Label spendLabel = new Label();
-				spendLabel.Content = "Uses Spending Money";
-				spendLabel.Foreground = Brushes.Blue;
-				dp.Children.Add(spendLabel);
-			}
 			Label cate = new Label();
 			cate.Content = payment.Category;
+			cate.Foreground = isSpending ? Brushes.Blue : Brushes.Gray;
 			cate.HorizontalContentAlignment = HorizontalAlignment.Right;
 			DockPanel.SetDock(cate, Dock.Right);
 			TextBlock desc = new TextBlock();
 			desc.FontStyle = FontStyles.Italic;
+			desc.FontSize = 14;
 			desc.Text = payment.FindDescription(-1 * bill);
 			desc.TextWrapping = TextWrapping.WrapWithOverflow;
 			DockPanel.SetDock(desc, Dock.Left);

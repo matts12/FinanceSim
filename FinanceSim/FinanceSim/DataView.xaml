@@ -8,30 +8,34 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="DataView">
     <DockPanel Name="mainPanel">
-        <Label Name="dateLabel" FontFamily="Century Gothic" FontSize="18" DockPanel.Dock="Top"/>
+        <Label Name="dateLabel" HorizontalContentAlignment="Center" FontWeight="Bold" Background="Wheat" FontFamily="Century Gothic" FontSize="24" DockPanel.Dock="Top"/>
         <Grid DockPanel.Dock="Bottom">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*" MinWidth="250"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*" MinWidth="200"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="0">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Grid.Column="0">
                 <StackPanel Name="expensesPanel"/>
             </ScrollViewer>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
             <DockPanel Name="innerRightPanel" Grid.Column="2">
-                <Button Name="advanceButton" DockPanel.Dock="Top" Click="advanceButton_Click" Content="Advance">
+                <Button Name="advanceButton" DockPanel.Dock="Top" FontSize="24" FontWeight="DemiBold" Click="advanceButton_Click" Content="Advance Day">
                     <Button.ToolTip>
-                        <Label>Ctrl-A</Label>
-					</Button.ToolTip>
+                        <Label FontSize="14" FontStyle="Italic">Ctrl-A</Label>
+                    </Button.ToolTip>
                 </Button>
-                <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
-                <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="spendingLabel"/>
-                <Button Name="backButton" DockPanel.Dock="Bottom" Click="backButton_Click">Exit</Button>
-                <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" SizeChanged="calendarGrid_SizeChanged" Columns="7" Rows="6"/>
+                <Label DockPanel.Dock="Top" FontSize="18" HorizontalContentAlignment="Center">Current Balance</Label>
+                <Label DockPanel.Dock="Top" FontWeight="ExtraBlack" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
+                <Label DockPanel.Dock="Top" FontSize="18" HorizontalContentAlignment="Center">Spending Money</Label>
+                <Label DockPanel.Dock="Top" FontWeight="ExtraBlack" FontFamily="Century Gothic" FontSize="18" Name="spendingLabel"/>
+                <Button Name="backButton" FontSize="18" DockPanel.Dock="Bottom" Click="backButton_Click">Exit</Button>
+                <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden">
+                    <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" SizeChanged="calendarGrid_SizeChanged" Columns="7" Rows="6"/>
+                </ScrollViewer>
             </DockPanel>
         </Grid>
     </DockPanel>
