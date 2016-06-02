@@ -7,10 +7,10 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FinanceSim")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Daily Finance Sim")]
+[assembly: AssemblyDescription("A simulator designed to create random daily payments")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("matt.spooner10@gmail.com")]
 [assembly: AssemblyProduct("FinanceSim")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]

@@ -115,8 +115,10 @@ namespace FinanceSim {
 				DockPanel.SetDock(vp, Dock.Top);
 				expensesPanel.Children.Add(vp);
 				money += vp.Bill;
-				if (vp.IsSpending)
+				if (vp.IsSpending) {
 					spendingMoney += vp.Bill;
+				}
+					
 			}
 			if(vPays.Count == 0) {
 				Label ne = new Label();
@@ -124,8 +126,6 @@ namespace FinanceSim {
 				ne.FontSize = 14;
 				expensesPanel.Children.Add(ne);
             }
-			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
-			spendingLabel.Content = "Spending money:" + spendingMoney.ToString("C", formatInfo);
 			if(!first)
 				highlightedIndex++;
 			if(highlightedIndex == calendarGrid.Children.Count) {
@@ -135,6 +135,8 @@ namespace FinanceSim {
 			}
 			else
 				ColorToday(!first);
+			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
+			spendingLabel.Content = "Spending money:" + spendingMoney.ToString("C", formatInfo);
 		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();

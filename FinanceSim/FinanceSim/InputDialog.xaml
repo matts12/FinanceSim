@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FinanceSim"
         mc:Ignorable="d"
-        Title="User Input" Height="150" Width="330" WindowStyle="ToolWindow" 
+        Title="User Input" Height="150" Width="350" WindowStyle="ToolWindow" 
 		ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
     <StackPanel>
         <TextBlock Name="descBlock" Margin="5" TextWrapping="WrapWithOverflow"/>

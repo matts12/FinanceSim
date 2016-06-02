@@ -8,11 +8,17 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="TitleView">
     <DockPanel>
-        <Label FontSize="72" DockPanel.Dock="Top">Daily Expense Simulator</Label>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
+			<Image Name="titleImg" HorizontalAlignment="Center" Width="80" Height="80"/>
+            <Label FontSize="52" Margin="5, 0, 0, 0" HorizontalContentAlignment="Center" FontWeight="Bold">Daily Expense Simulator</Label>
+        </StackPanel>
+        <Label FontSize="16" Margin="5, 0, 0, 0" DockPanel.Dock="Top" HorizontalContentAlignment="Center" Foreground="Gray">Made by Matt Spooner 2016</Label>
+        <Label FontSize="14" DockPanel.Dock="Top" HorizontalContentAlignment="Center" Foreground="Gray">Version 1.0.0</Label>
+        <Rectangle DockPanel.Dock="Top" Fill="Black" Width="Auto" Height="1"></Rectangle>
         <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto">
             <DockPanel>
-                <Button DockPanel.Dock="Top" Name="newButton" Click="NewButton_Click">New</Button>
-                <ListView DockPanel.Dock="Bottom" Name="profilesPanel"/>
+                <Button DockPanel.Dock="Top" Margin="15" Width="200" FontSize="18" FontWeight="DemiBold" Name="newButton" Click="NewButton_Click">New Profile</Button>
+                <StackPanel DockPanel.Dock="Bottom" Name="profilesPanel"/>
             </DockPanel>
         </ScrollViewer>
 	</DockPanel>

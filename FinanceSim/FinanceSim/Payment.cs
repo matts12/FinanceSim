@@ -177,31 +177,14 @@ namespace FinanceSim {
 				while (randTimes.Contains(r));
 				randTimes[i] = r;
 			}
-			if(randTimes.Length > 1) {
-				Array.Sort(randTimes, new IComparer<int>() {
-
-				});
-				Console.WriteLine("a: " + refTime.DayOfYear);
-				foreach (int j in randTimes)
-					Console.WriteLine(j);
-				Console.WriteLine("===============");
-				bool found = false;
-				for (int i = 0; i < randTimes.Length && !found; i++) {
-					switch (Freq) {
-						case Frequency.YEARLY: found = refTime.DayOfYear < randTimes[i]; break;
-						case Frequency.MONTHLY_DAY: found = refTime.Day < randTimes[i]; break;
-					}
-					if (found && i > 0 && i != randTimes.Length - 1) {
-						int[] temp = new int[i];
-						Array.Copy(randTimes, 0, temp, 0, temp.Length);
-						Array.Copy(randTimes, i, randTimes, 0, randTimes.Length - temp.Length);
-						for (int k = 0; k < temp.Length; k++) {
-							randTimes[temp.Length + k] = temp[k]; //TODO fix
-						}
-					}
+			if (randTimes.Length > 1) {
+				int level = -1;
+				switch (Freq) {
+					case Frequency.YEARLY: level = refTime.DayOfYear; break;
+					case Frequency.MONTHLY_DAY: level = refTime.Day; break;
+					case Frequency.WEEKLY: level = (int)refTime.DayOfWeek; break;
 				}
-				foreach (int j in randTimes)
-					Console.WriteLine(j);
+				Array.Sort(randTimes, new DateComparer(level));
 			}
 		}
 		internal override bool IsDue(DateTime day) {
@@ -279,6 +262,20 @@ namespace FinanceSim {
 			return new InputDialog().GetInput(this, Category.Equals("Spending Money"), min, max);
 		}
 	}
+	class CertainInputPayment : CertainPayment {
+		//members
+		private decimal min, max;
+		//constructors
+		internal CertainInputPayment(string name, Description desc, string category, Frequency freq,
+			DateTime refTime, decimal min = -1, decimal max = -1) : base(name, desc, category, freq, refTime) {
+			this.min = min;
+			this.max = max;
+		}
+		//methods
+		internal override decimal GetPayment(DateTime? day) {
+			return new InputDialog().GetInput(this, Category.Equals("Spending Money"), min, max);
+		}
+	}
 	class RelativeRandomPayment : CertainRandomPayment {
 		//members
 		private int inBetweenMin, inBetweenMax;
@@ -324,7 +321,7 @@ namespace FinanceSim {
 			for (int i = 0; i < size; i++) {
 				int j = -1;
 				do {
-					j = Rand.Next(0, oriPays.Length - 1);
+					j = Rand.Next(0, oriPays.Length);
 				} while (indexes.Contains(j));
 				indexes.Add(j);
 			}
@@ -343,6 +340,25 @@ namespace FinanceSim {
 		internal override decimal GetPayment(DateTime? day) {
 			return -1 * oriPays[chosens[curr]];
 		}
+	}
+	class DateComparer : IComparer<int> {
+		//members
+		private int level;
+		//consturctors
+		internal DateComparer(int level) {
+			this.level = level;
+		}
+		//methods
+		public int Compare(int x, int y) {
+			if (x > level && y > level || x < level && y < level) {
+				return x.CompareTo(y);
+			}
+			else if (x > level && y < level) {
+				return -1;
+			}
+			return x < level && y > level ? 1 : 0;
+		}
+		
 	}
 	public delegate int DescriptionSelector(decimal payment, int max);
 	[Serializable]

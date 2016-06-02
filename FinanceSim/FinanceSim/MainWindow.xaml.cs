@@ -88,5 +88,8 @@ namespace FinanceSim {
 		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
 			Console.WriteLine((e.ExceptionObject as Exception).Message);
 		}
+		private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			SaveProfiles();
+		}
 	}
 }

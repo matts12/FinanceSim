@@ -15,8 +15,6 @@ namespace FinanceSim {
 			return new DateTime(year, month, rand.Next(1, 28));
 		}
 		internal static List<Payment> GeneratePayments(Profile profile) {
-			//TODO add payments
-			//TODO apply challenge level
 			List<Payment> payments = new List<Payment>();
 			//pay
 			DateTime tuesday = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
@@ -28,6 +26,7 @@ namespace FinanceSim {
 				payments.Add(cfp);
 			//utilities
 			payments.Add(new CertainFixedPayment("Cell Phone Bill", new Description("Your cell phone bill is due."), "Utility", profile.CellPhone, Frequency.MONTHLY_DAY, RandomDay()));
+			payments.Add(new CertainFixedPayment("Internet/Cable Bill", new Description("Your internet/cable bill is due."), "Utility", profile.CableInternet, Frequency.MONTHLY_DAY, RandomDay()));
 			payments.Add(new CertainMonthDepPayment("Heating Bill", new Description("Your heating bill is due."), "Utility", rand, new decimal[] {
 				97, 92, 75, 60, 30, 0, 0, 0, 25, 40, 75, 90
 			}, new decimal[] {
@@ -51,6 +50,7 @@ namespace FinanceSim {
 			payments.Add(new UncertainRandomPayment("Car repairs", new Description("Your car needs to be fixed."), "Car", Frequency.YEARLY, totalRepairs / 4.0m * .9m, totalRepairs / 4.0m * 1.1m, rand, 4, 4, profile.DesiredDate));
 			decimal gasPerMonth = 42 * profile.GasRate / profile.MPG * 30;
 			payments.Add(new RelativeRandomPayment("Gas", new Description("Your car needs gas."), "Car", gasPerMonth * .3763m, gasPerMonth * .4063m, rand, new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 3), 11, 14));
+			payments.Add(new UncertainFixedPayment("Car Payment", new Description("You paid money toward your car"), "Car", profile.MonthlyCarPayment, Frequency.MONTHLY_DAY, 1, 1, profile.DesiredDate, rand));
 			//food
 			payments.Add(new UncertainRandomPayment("Food", new Description("You need this to survive."), "Food", Frequency.WEEKLY, 75m, 95m, rand, 1, 1, profile.DesiredDate, 2));
 			payments.Add(new UncertainRandomPayment("Meal Out", new Description("You enjoy a lunch out with friends."), "Food", Frequency.MONTHLY_DAY, 6.5m, 15.5m, rand, 2, 3, profile.DesiredDate));
@@ -83,24 +83,23 @@ namespace FinanceSim {
 				"Take a day trip.Enter details and expenses.",
 				"Buy something for a hobby. Enter details and expenses."
 				), "Spending Money", Frequency.YEARLY, 30, 40, profile.DesiredDate, rand));
-			//TODO
 			//medical
 			payments.Add(new RelativeRandomPayment("Dentist", new Description("Get your teeth cleaned with a visit to the dentist."), "Medical", 69.5m, 139.5m, rand, RandomDay(profile.DesiredDate.Month + 1, profile.DesiredDate.Year), 170, 200));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at doctor's office."), "Medical", 30m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at specialist's office."), "Medical", 40m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
-			payments.Add(new UncertainAlternatingPayment("Medical Bill", "Medical", Frequency.YEARLY, 2, new decimal[] { 140, 187, 247, 298 }, new string[] {
+			payments.Add(new UncertainAlternatingPayment("Medical Bill", "Medical", Frequency.YEARLY, profile.ChallengeLevel == 1 ? 2 : (profile.ChallengeLevel == 2 ? 3 : 4), new decimal[] { 140, 187, 247, 298 }, new string[] {
 				"You have blood tests done",
 				"You have x-rays done",
 				"You have lab tests done",
 				"You visit the hospital"
 			}, profile.DesiredDate, rand));
 			//bad stuff
-			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Very Bad Stuff", Frequency.YEARLY, 2, new decimal[] {
+			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Very Bad Stuff", Frequency.YEARLY, profile.ChallengeLevel == 1 ? 2 : (profile.ChallengeLevel == 2 ? 3 : 4), new decimal[] {
 				215, 219, 225, 240, 243, 299, 280, 300, 310, 368, 199, 450, 375, 675, 650, 900, 1654, 2365, 1000, 4420
 			}, new string[] {
 				"Buy a bike, canoe, or kayak rack for your car.",
 				"Buy a dehumidifier because the moisture is ruining your stuff.",
-				"Computer repairs.At least it's cheaper than a new one.",
+				"Computer repairs. At least it's cheaper than a new one.",
 				"A tire was shredded by a piece of metal.Buy a new pair.",
 				"You lost your wallet. Subtract a total of $243 from somewhere in your budget.",
 				"Your went in the ocean with your cell phone.Replace it.Minimum cost shown.",
@@ -119,7 +118,7 @@ namespace FinanceSim {
 				"Your bicycle or laptop was stolen. (Pick one.) Enter the cost of replacement.",
 				"You blew an engine block in your vehicle.Sorry."
 			}, profile.DesiredDate, rand));
-			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Medium Bad Stuff", Frequency.YEARLY, 5, new decimal[] {
+			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Medium Bad Stuff", Frequency.YEARLY, profile.ChallengeLevel == 1 ? 5 : (profile.ChallengeLevel == 2 ? 7 : 9), new decimal[] {
 				63, 65, 72, 74, 78, 79, 80, 84, 95, 96, 97, 98, 119, 125, 126, 145, 155, 157, 179, 180, 195, 196
 			}, new string[] {
 				"Pay to go to high school reunion.",
@@ -145,7 +144,7 @@ namespace FinanceSim {
 				"You sat on your glasses and destroyed them.Buy new ones.",
 				"Pay for this speeding ticket, and increase your auto insurance by 10 %."
 			}, profile.DesiredDate, rand));
-			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Small Bad Stuff", Frequency.MONTHLY_DAY, 1, new decimal[] {
+			payments.Add(new UncertainAlternatingPayment("Bad stuff", "Small Bad Stuff", Frequency.MONTHLY_DAY, profile.ChallengeLevel, new decimal[] {
 				8, 9, 14, 15, 17, 18, 19, 20, 21, 28, 45, 27, 24, 45, 46, 47, 48, 49, 50, 51
 			}, new string[] {
 				"You need light bulbs.",
@@ -223,7 +222,28 @@ namespace FinanceSim {
 					payments.Add(new UncertainRandomPayment("Pet Physical", new Description("Take your pet in for a physical."), "Pets", Frequency.YEARLY, 85.25m, 140.25m, rand, 1, 1, profile.DesiredDate));
 				payments.Add(new UncertainRandomPayment("Pet Emergency", new Description("Your pet requires emergency care."), "Pets", Frequency.YEARLY, 245.25m, 430.25m, rand, 1, 1, profile.DesiredDate));
             }
-			//TODO
+			payments.Add(new CertainInputPayment("Holiday Gifts", new Description("Buy specific holiday presents for at least 4 people.  Be realistic."), "Holiday", Frequency.YEARLY, new DateTime(profile.DesiredDate.Year, 12, 1)));
+			payments.Add(new CertainInputPayment("Forgotten Gift", new Description("You forgot someone. Buy one more holiday present."), "Holiday", Frequency.YEARLY, new DateTime(profile.DesiredDate.Year, 12, 14)));
+			payments.Add(new UncertainInputPayment("Clothes", new Description(
+				"Buy new shoes or 1 clothing item.Enter actual expenses.",
+                "Buy new shoes or 1 clothing item.Enter actual expenses.",
+                "Buy new shoes or 1 clothing item.Enter actual expenses.",
+                "Buy new shoes or 1 clothing item.Enter actual expenses.",
+                "Buy new shoes or 2 clothing item(s).Enter actual expenses.",
+                "Buy new shoes or 3 clothing item(s).Enter actual expenses.",
+                "Buy new shoes or 3 clothing item(s).Enter actual expenses."
+				), "Clothes", Frequency.MONTHLY_DAY, 1, 1, profile.DesiredDate, rand));
+			if(profile.Male != null) {
+				if (profile.Male.Value) {
+					payments.Add(new UncertainInputPayment("Buy Gift", new Description("Guys, buy a gift for a girl."), "Gifts", Frequency.YEARLY, 2, 3, profile.DesiredDate, rand));
+				}
+				else {
+					payments.Add(new UncertainInputPayment("Buy Makeup", new Description("Buy make-up if you are female. Enter a realistic value."), "Makeup", Frequency.YEARLY, 2, 3, profile.DesiredDate, rand));
+				}
+			}
+			payments.Add(new UncertainInputPayment("Haircut", new Description("Get your hair done. Enter a realistic value"), "Haircut", Frequency.YEARLY, 6, 6, profile.DesiredDate, rand));
+			payments.Add(new CertainFixedPayment("Rent", new Description("Pay your apartment rent."), "Rent", profile.Rent, Frequency.MONTHLY_DAY, RandomDay()));
+			payments.Add(new CertainFixedPayment("College Loan", new Description("Pay your college loan"), "Loan", profile.CollegeLoan, Frequency.MONTHLY_DAY, RandomDay()));
 			return payments;
 		}
 	}

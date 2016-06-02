@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -21,53 +22,82 @@ namespace FinanceSim {
 		public TitleView(MainWindow parent) {
             InitializeComponent();
 			this.parent = parent;
+			titleImg.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+			   Properties.Resources.img.GetHbitmap(),
+			   IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(200, 200));
 		}
 		//methods
 		internal void OpenProfiles(List<Profile> profiles) {
-			profilesPanel.Items.Clear();
-			for(int i = 0; i < profiles.Count; i++)
-				profilesPanel.Items.Add(CreateProfilePanel(profiles[i], i));
+			profilesPanel.Children.Clear();
+			for(int i = 0; i < profiles.Count; i++) {
+				profilesPanel.Children.Add(CreateProfilePanel(profiles[i], i));
+			}
 		}
-		private Grid CreateProfilePanel(Profile p, int i) {
-			Grid g = new Grid();
-			g.ColumnDefinitions.Add(new ColumnDefinition());
-			g.ColumnDefinitions.Add(new ColumnDefinition());
-			g.ColumnDefinitions.Add(new ColumnDefinition());
-			g.RowDefinitions.Add(new RowDefinition());
-			g.RowDefinitions.Add(new RowDefinition());
+		private StackPanel CreateProfilePanel(Profile p, int i) {
+			StackPanel sp = new StackPanel();
+			sp.Background = i % 2 == 0 ? Brushes.White : Brushes.LightGray;
+			DockPanel dp = new DockPanel();
 
 			Label l = new Label();
 			l.Content = p.LastName + ", " + p.FirstName;
-			Grid.SetRow(l, 0);
-			Grid.SetColumn(l, 0);
-			Grid.SetColumnSpan(l, 2);
-			g.Children.Add(l);
+			l.FontSize = 32;
+			l.FontWeight = FontWeights.Heavy;
+			DockPanel.SetDock(l, Dock.Left);
+			dp.Children.Add(l);
+			l = new Label();
+			l.Content = "Last Opened: " + p.LastOpened.ToString("dddd, MMMM dd") + " at " + p.LastOpened.ToString("h:mm");
+			l.Foreground = Brushes.Gray;
+			l.FontSize = 20;
+			l.HorizontalContentAlignment = HorizontalAlignment.Right;
+			l.VerticalContentAlignment = VerticalAlignment.Center;
+			l.FontStyle = FontStyles.Italic;
+			DockPanel.SetDock(l, Dock.Right);
+			dp.Children.Add(l);
+
+			UniformGrid ug = new UniformGrid();
+			ug.Columns = 5;
+			ug.Rows = 1;
+
+			l = new Label();
+			l.FontSize = 14;
+			l.VerticalContentAlignment = VerticalAlignment.Center;
+			l.HorizontalContentAlignment = HorizontalAlignment.Center;
+			l.Content = "Start Date: " + p.DesiredDate.ToString("M/dd/yy");
+			ug.Children.Add(l);
+
+			l = new Label();
+			l.Foreground = Brushes.Green;
+			l.FontSize = 14;
+			l.VerticalContentAlignment = VerticalAlignment.Center;
+			l.HorizontalContentAlignment = HorizontalAlignment.Center;
+			l.Content = "Income: " + p.BiPay.ToString("C");
+			ug.Children.Add(l);
 
 			Button b = new Button();
+			b.Margin = new Thickness(15);
 			b.Content = "Open";
 			b.Name = "openButton_" + i;
 			b.Click += OpenButton_Click;
-			Grid.SetRow(b, 1);
-			Grid.SetColumn(b, 0);
-			g.Children.Add(b);
+			ug.Children.Add(b);
 
 			b = new Button();
+			b.Margin = new Thickness(15);
 			b.Content = "Edit";
 			b.Name = "editButton_" + i;
 			b.Click += EditButton_Click;
-			Grid.SetRow(b, 1);
-			Grid.SetColumn(b, 1);
-			g.Children.Add(b);
-			b = new Button();
+			ug.Children.Add(b);
 
 			b = new Button();
+			b.Margin = new Thickness(15);
 			b.Content = "Delete";
 			b.Name = "deleteButton_" + i;
 			b.Click += DeleteButton_Click;
-			Grid.SetRow(b, 1);
-			Grid.SetColumn(b, 2);
-			g.Children.Add(b);
-			return g;
+			ug.Children.Add(b);
+
+			sp.Children.Add(dp);
+			sp.Children.Add(ug);
+
+			return sp;
 		}
 		//wpf
 		private void OpenButton_Click(object sender, RoutedEventArgs e) {

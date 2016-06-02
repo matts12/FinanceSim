@@ -192,9 +192,10 @@ namespace FinanceSim {
 			tb.Text = payment != null ? payment.Value.ToString("C") : "";
 			tb.LostFocus += Currency_LostFocus;
 			ug.Children.Add(tb);
-
+			//TODO UI
+			//TODO document
 			l = new Label();
-			l.Content = "Payment Day:"; //TODO replace
+			l.Content = "Payment Day:";
 			ug.Children.Add(l);
 			DatePicker dp = new DatePicker();
 			dp.SelectedDate = date;

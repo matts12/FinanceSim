@@ -17,15 +17,18 @@
                 <GroupBox Header="Personal">
                     <UniformGrid Columns="4" Rows="3">
                         <Label>First Name:</Label>
-                        <TextBox Name="firstNameIn" LostFocus="String_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="firstNameIn" LostFocus="String_LostFocus"/>
                         <Label>Last Name:</Label>
-                        <TextBox Name="lastNameIn" LostFocus="String_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="lastNameIn" LostFocus="String_LostFocus"/>
                         <Label>Birthday:</Label>
-                        <DatePicker Name="birthdayIn" LostFocus="DateTime_LostFocus"/>
-                        <Label>Income:</Label>
-                        <TextBox Name="biPayIn" LostFocus="Currency_LostFocus"/>
+                        <DatePicker Height="30" VerticalAlignment="Top" Name="birthdayIn" LostFocus="DateTime_LostFocus"/>
+                        <StackPanel>
+                            <Label>Income:</Label>
+                            <TextBlock MaxWidth="150" TextWrapping="WrapWithOverflow" FontStyle="Italic">Your bi-weekly paycheck. Calculated in class</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="biPayIn" LostFocus="Currency_LostFocus"/>
                         <Label>Gender:</Label>
-                        <ComboBox Name="maleIn">
+                        <ComboBox Height="20" VerticalAlignment="Top" Name="maleIn">
                             <ComboBoxItem>Male</ComboBoxItem>
                             <ComboBoxItem>Female</ComboBoxItem>
                             <ComboBoxItem>Other</ComboBoxItem>
@@ -34,26 +37,35 @@
                 </GroupBox>
                 <GroupBox Header="Car">
                     <UniformGrid Rows="3" Columns="4">
-                        <Label>Car Value:</Label>
-                        <TextBox Name="carValueIn" LostFocus="Currency_LostFocus"/>
+                        <StackPanel>
+                            <Label>Car Value:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">The original value of the car.</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="carValueIn" LostFocus="Currency_LostFocus"/>
                         <Label>Miles on Car:</Label>
-                        <TextBox Name="carMilesIn" LostFocus="Number_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="carMilesIn" LostFocus="Number_LostFocus"/>
                         <Label>Gas Price per Gallon:</Label>
-                        <TextBox Name="gasRateIn" LostFocus="Currency_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="gasRateIn" LostFocus="Currency_LostFocus"/>
                         <Label>MPG:</Label>
-                        <TextBox Name="mpgIn" LostFocus="Number_LostFocus"/>
-                        <Label>Monthly Payment:</Label>
-                        <TextBox Name="monthlyCarPaymentIn" LostFocus="Currency_LostFocus"/>
-                        <Label>Years on Car:</Label>
-                        <TextBox Name="carYearsIn" LostFocus="Number_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="mpgIn" LostFocus="Number_LostFocus"/>
+                        <StackPanel>
+                            <Label>Monthly Payment:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">The monthly payment towards your car.</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="monthlyCarPaymentIn" LostFocus="Currency_LostFocus"/>
+                        <StackPanel>
+                            <Label>Years:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">How long has it been driven?</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="carYearsIn" LostFocus="Number_LostFocus"/>
                     </UniformGrid>
                 </GroupBox>
                 <GroupBox Header="Utilities">
                     <UniformGrid Rows="3" Columns="4">
-                        <Label>Cable/Internet:</Label>
-                        <TextBox Name="cableInternetIn" LostFocus="Currency_LostFocus"/>
-                        <Label>Cell Phone:</Label>
-                        <TextBox Name="cellPhoneIn" LostFocus="Currency_LostFocus"/>
+                        <Label>Monthly Cable/Internet:</Label>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="cableInternetIn" LostFocus="Currency_LostFocus"/>
+                        <Label>Monthly Cell Phone:</Label>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="cellPhoneIn" LostFocus="Currency_LostFocus"/>
                         <Label>Water Included in Rent?</Label>
                         <CheckBox Name="incWaterIn" DockPanel.Dock="Right" VerticalAlignment="Center"/>
                         <Label>Electricity Included in Rent?</Label>
@@ -64,36 +76,48 @@
                 </GroupBox>
                 <GroupBox Header="Miscellaneous">
                     <UniformGrid Rows="2" Columns="4">
-                        <Label>Pets:</Label>
-                        <TextBox Name="petsIn" LostFocus="Number_LostFocus"/>
-                        <Label>Rent:</Label>
-                        <TextBox Name="rentIn" LostFocus="Currency_LostFocus"/>
-                        <Label>College Loan:</Label>
-                        <TextBox Name="collegeLoanIn" LostFocus="Currency_LostFocus"/>
-                        <Label>Spending Money:</Label>
-                        <TextBox Name="spendingIn" LostFocus="Currency_LostFocus"/>
+                        <Label>Number of Pets:</Label>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="petsIn" LostFocus="Number_LostFocus"/>
+                        <StackPanel>
+                            <Label>Rent:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">Monthly apartment rent</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="rentIn" LostFocus="Currency_LostFocus"/>
+                        <StackPanel>
+                            <Label>College Loan:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">Monthly payment towards college</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="collegeLoanIn" LostFocus="Currency_LostFocus"/>
+                        <StackPanel>
+                            <Label>Spending Money:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">Spare money per month. Your value must be approved by the teacher.</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="spendingIn" LostFocus="Currency_LostFocus"/>
                     </UniformGrid>
                 </GroupBox>
                 <GroupBox Header="Spending Habits">
                     <UniformGrid Rows="2" Columns="4">
                         <Label>Days between snacking:</Label>
-                        <TextBox Name="snackFreqIn" LostFocus="Number_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="snackFreqIn" LostFocus="Number_LostFocus"/>
                         <Label>Days between coffee:</Label>
-                        <TextBox Name="coffeeFreqIn" LostFocus="Number_LostFocus"/>
-                        <Label>Digital stuff:</Label>
-                        <TextBox Name="digitalsIn" LostFocus="Number_LostFocus"/>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="coffeeFreqIn" LostFocus="Number_LostFocus"/>
+                        <StackPanel>
+                            <Label>Digital stuff:</Label>
+                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">Apps, music, movies per year</TextBlock>
+                        </StackPanel>
+                        <TextBox Height="20" VerticalAlignment="Top" Name="digitalsIn" LostFocus="Number_LostFocus"/>
                     </UniformGrid>
                 </GroupBox>
-                <GroupBox Header="Other Bills">
+                <GroupBox Header="Other Monthly Bills">
                     <StackPanel>
-                        <ListView Name="otherMonthlyIn" MinHeight="50" MaxHeight="150" MaxWidth="500" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                        <ListView Name="otherMonthlyIn" MinHeight="50" MaxHeight="150" MaxWidth="550" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Button Name="addBillButton" Click="addBillButton_Click" Margin="0,0,50,0" Width="100">Add</Button>
                             <Button Name="removeBillButton" Click="removeBillButton_Click" Margin="50,0,0,0" Width="100">Remove</Button>
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Difficulty Level">
+                <GroupBox Margin="10" Header="Difficulty Level">
                     <StackPanel>
                         <Slider Name="challengeLevelIn" Orientation="Horizontal" Maximum="3" Minimum="1" IsSnapToTickEnabled="True" TickPlacement="BottomRight" TickFrequency="1"/>
                         <DockPanel>
@@ -103,10 +127,24 @@
                         </DockPanel>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Start Date">
-                    <DatePicker Name="desiredDateIn" LostFocus="DateTime_LostFocus"/>
+                <GroupBox Margin="10" Header="Start Date">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Label>When to start the simulation (only the year and month).  </Label>
+                        <DatePicker Width = "100" Name="desiredDateIn" LostFocus="DateTime_LostFocus"/>
+                    </StackPanel>
                 </GroupBox>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
+    <Page.Resources>
+        <Style TargetType="GroupBox">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="15" FontWeight="Bold" Margin="5"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 </Page>
