@@ -19,7 +19,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="0">
-                <StackPanel Name="expensesPanel" Background="Aqua"/>
+                <StackPanel Name="expensesPanel"/>
             </ScrollViewer>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
             <DockPanel Name="innerRightPanel" Grid.Column="2">
@@ -29,6 +29,7 @@
 					</Button.ToolTip>
                 </Button>
                 <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
+                <Label DockPanel.Dock="Top" FontFamily="Century Gothic" FontSize="18" Name="spendingLabel"/>
                 <Button Name="backButton" DockPanel.Dock="Bottom" Click="backButton_Click">Exit</Button>
                 <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" SizeChanged="calendarGrid_SizeChanged" Columns="7" Rows="6"/>
             </DockPanel>

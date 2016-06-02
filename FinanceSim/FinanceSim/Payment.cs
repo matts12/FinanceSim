@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -103,6 +104,8 @@ namespace FinanceSim {
 			this.lower = lower;
 			this.rand = rand;
 		}
+		//properties
+		internal Random Rand { get { return rand; } }
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			return -1 * RandRange(lower, upper, rand);
@@ -174,7 +177,32 @@ namespace FinanceSim {
 				while (randTimes.Contains(r));
 				randTimes[i] = r;
 			}
-			Array.Sort(randTimes);
+			if(randTimes.Length > 1) {
+				Array.Sort(randTimes, new IComparer<int>() {
+
+				});
+				Console.WriteLine("a: " + refTime.DayOfYear);
+				foreach (int j in randTimes)
+					Console.WriteLine(j);
+				Console.WriteLine("===============");
+				bool found = false;
+				for (int i = 0; i < randTimes.Length && !found; i++) {
+					switch (Freq) {
+						case Frequency.YEARLY: found = refTime.DayOfYear < randTimes[i]; break;
+						case Frequency.MONTHLY_DAY: found = refTime.Day < randTimes[i]; break;
+					}
+					if (found && i > 0 && i != randTimes.Length - 1) {
+						int[] temp = new int[i];
+						Array.Copy(randTimes, 0, temp, 0, temp.Length);
+						Array.Copy(randTimes, i, randTimes, 0, randTimes.Length - temp.Length);
+						for (int k = 0; k < temp.Length; k++) {
+							randTimes[temp.Length + k] = temp[k]; //TODO fix
+						}
+					}
+				}
+				foreach (int j in randTimes)
+					Console.WriteLine(j);
+			}
 		}
 		internal override bool IsDue(DateTime day) {
 			if (needNewValues) {
@@ -195,7 +223,7 @@ namespace FinanceSim {
 			else {
 				bool isDue = false;
 				switch (Freq) {
-					case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; break;
+					case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; Console.WriteLine(day.DayOfYear + " " + randTimes[currRand]);  break;
 					case Frequency.MONTHLY_DAY: isDue = day.Day == randTimes[currRand]; break;
 					case Frequency.WEEKLY: isDue = (int)day.DayOfWeek == randTimes[currRand]; break;
 					case Frequency.BI_MONTHLY: throw new NotImplementedException();
@@ -239,33 +267,41 @@ namespace FinanceSim {
 	}
 	class UncertainInputPayment : UncertainPayment {
 		//members
-		private decimal input;
+		private decimal min, max;
 		//constructors
 		internal UncertainInputPayment(string name, Description desc, string category, Frequency freq, int minTimes, int maxTimes, 
-			DateTime month, Random rand, int highAdj = 0) : base(name, desc, category, freq, minTimes, maxTimes, month, rand, highAdj) {
-			input = decimal.MinValue;
+			DateTime month, Random rand, decimal min = -1, decimal max = -1) : base(name, desc, category, freq, minTimes, maxTimes, month, rand, 0) {
+			this.min = min;
+			this.max = max;
 		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
-			if (input.Equals(decimal.MinValue)) {
-				input = new InputDialog().GetValue(); //TODO
-				//string result = Microsoft.VisualBasic.Interaction.InputBox("Enter a Value", "Enter a Value"); //TODO
-				//Console.WriteLine(result);
-			}
-			return input;
+			return new InputDialog().GetInput(this, Category.Equals("Spending Money"), min, max);
 		}
 	}
 	class RelativeRandomPayment : CertainRandomPayment {
 		//members
-		private int inBetween;
+		private int inBetweenMin, inBetweenMax;
+		private int inBe;
+		private DateTime lastTime;
 		//constructors
-		internal RelativeRandomPayment(string name, Description desc, string category, decimal lower, decimal upper, Random rand, DateTime refTime, int inBetween) 
+		internal RelativeRandomPayment(string name, Description desc, string category, decimal lower, decimal upper, Random rand, DateTime refTime, int inBetweenMin, int inBetweenMax) 
 			: base(name, desc, category, lower, upper, rand, Frequency.YEARLY, refTime) {
-			this.inBetween = inBetween;
-		}
+			this.inBetweenMin = inBetweenMin;
+			this.inBetweenMax = inBetweenMax;
+			inBe = Rand.Next(inBetweenMin, inBetweenMax);
+			lastTime = refTime;
+        }
 		//methods
 		internal override bool IsDue(DateTime day) {
-			return day.Subtract(RefTime).TotalDays % inBetween == 0;
+			bool due = day.Subtract(lastTime).Days % inBe == 0;
+			if (due) {
+				Console.WriteLine("due");
+				inBe = Rand.Next(inBetweenMin, inBetweenMax);
+				lastTime = day;
+				Console.WriteLine(inBe);
+			}
+			return due;
 		}
 	}
 	class UncertainAlternatingPayment : UncertainPayment {

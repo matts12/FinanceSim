@@ -27,6 +27,7 @@ namespace FinanceSim {
 			foreach (CertainFixedPayment cfp in profile.OtherMonthly)
 				payments.Add(cfp);
 			//utilities
+			payments.Add(new CertainFixedPayment("Cell Phone Bill", new Description("Your cell phone bill is due."), "Utility", profile.CellPhone, Frequency.MONTHLY_DAY, RandomDay()));
 			payments.Add(new CertainMonthDepPayment("Heating Bill", new Description("Your heating bill is due."), "Utility", rand, new decimal[] {
 				97, 92, 75, 60, 30, 0, 0, 0, 25, 40, 75, 90
 			}, new decimal[] {
@@ -43,10 +44,13 @@ namespace FinanceSim {
 				7, 7,7,7,7,7,7,7,7,7,7,7
 			}, Frequency.MONTHLY_DAY, RandomDay()));
 			//car
-			payments.Add(new RelativeRandomPayment("Car Insurance", new Description("Bi-annual car insurance premium."), "Car", 462.67m, 551.23m, rand, RandomDay(profile.DesiredDate.Month + 2, profile.DesiredDate.Year), 180));
+			payments.Add(new RelativeRandomPayment("Car Insurance", new Description("Bi-annual car insurance premium."), "Car", 462.67m, 551.23m, rand, RandomDay(profile.DesiredDate.Month + 2, profile.DesiredDate.Year), 160, 200));
 			payments.Add(new CertainFixedPayment("Tires", new Description("Looks like you need new tires!"), "Car", 875m, Frequency.YEARLY, RandomDay(profile.DesiredDate.Month + 3, profile.DesiredDate.Year)));
 			payments.Add(new CertainFixedPayment("Registration", new Description("Pay for car registration this month."), "Car", (decimal)((profile.CarYears < 5 ? 1.5 - .24 * profile.CarYears : .25) * (double)profile.CarValue / 100.0 + 50), Frequency.YEARLY, new DateTime(profile.DesiredDate.Year, profile.Birthday.Month, 1)));
-			//TODO
+			decimal totalRepairs = (decimal)(0.011 * profile.CarMiles + 300);
+			payments.Add(new UncertainRandomPayment("Car repairs", new Description("Your car needs to be fixed."), "Car", Frequency.YEARLY, totalRepairs / 4.0m * .9m, totalRepairs / 4.0m * 1.1m, rand, 4, 4, profile.DesiredDate));
+			decimal gasPerMonth = 42 * profile.GasRate / profile.MPG * 30;
+			payments.Add(new RelativeRandomPayment("Gas", new Description("Your car needs gas."), "Car", gasPerMonth * .3763m, gasPerMonth * .4063m, rand, new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 3), 11, 14));
 			//food
 			payments.Add(new UncertainRandomPayment("Food", new Description("You need this to survive."), "Food", Frequency.WEEKLY, 75m, 95m, rand, 1, 1, profile.DesiredDate, 2));
 			payments.Add(new UncertainRandomPayment("Meal Out", new Description("You enjoy a lunch out with friends."), "Food", Frequency.MONTHLY_DAY, 6.5m, 15.5m, rand, 2, 3, profile.DesiredDate));
@@ -64,9 +68,24 @@ namespace FinanceSim {
 				"Start the day with some coffee."
 				), "Food", Frequency.WEEKLY, 1.5m, 3.95m, rand, profile.CoffeeFreq / 2, profile.CoffeeFreq, profile.DesiredDate));
 			//spending $
+			payments.Add(new UncertainRandomPayment("Random Spending", new Description("You used some of your spending money."), "Spending Money", Frequency.MONTHLY_DAY, 10m, ((profile.Spending - 40)/2 + profile.Spending)/4, rand, 3, 4, profile.DesiredDate));
+			payments.Add(new UncertainInputPayment("Digital Purchase", new Description("Buy an app, music, or a movie. Enter correct amount."), "Spending Money", Frequency.YEARLY, (int)(profile.Digitals * .9), (int)(profile.Digitals * 1.1), profile.DesiredDate, rand));
+			payments.Add(new UncertainInputPayment("Day Out", new Description("Go on a date or out with friends. Be specific. Enter amount."), "Spending Money", Frequency.YEARLY, 45, 50, profile.DesiredDate, rand));
+			payments.Add(new UncertainInputPayment("Random Spending", new Description(
+				"Take a day trip. Enter details and expenses.",
+				"Surprise a friend.Enter item and expenses.",
+				"Buy a present or card for someone.Be specific. Enter amount.",
+				"Buy supplies for computer or printer.",
+				"Take a day trip.Eat.Buy a souvenir.Enter expenses.",
+				"Donate to a charity.Be specific.Enter $5 -$200.",
+				"Take a day trip.Enter details and expenses.",
+				"Take a day trip.Enter details and expenses.",
+				"Take a day trip.Enter details and expenses.",
+				"Buy something for a hobby. Enter details and expenses."
+				), "Spending Money", Frequency.YEARLY, 30, 40, profile.DesiredDate, rand));
 			//TODO
 			//medical
-			payments.Add(new RelativeRandomPayment("Dentist", new Description("Get your teeth cleaned with a visit to the dentist."), "Medical", 69.5m, 139.5m, rand, RandomDay(profile.DesiredDate.Month + 1, profile.DesiredDate.Year), 180));
+			payments.Add(new RelativeRandomPayment("Dentist", new Description("Get your teeth cleaned with a visit to the dentist."), "Medical", 69.5m, 139.5m, rand, RandomDay(profile.DesiredDate.Month + 1, profile.DesiredDate.Year), 170, 200));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at doctor's office."), "Medical", 30m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
 			payments.Add(new UncertainFixedPayment("Co-pay", new Description("You had to co-pay at specialist's office."), "Medical", 40m, Frequency.YEARLY, 1, 1, profile.DesiredDate, rand));
 			payments.Add(new UncertainAlternatingPayment("Medical Bill", "Medical", Frequency.YEARLY, 2, new decimal[] { 140, 187, 247, 298 }, new string[] {
@@ -198,6 +217,12 @@ namespace FinanceSim {
 				"Happy Holidays, " + profile.FirstName + ". Your Mr. I has given you some money."
 				), "Good stuff", -50m, -200m, rand, Frequency.YEARLY, new DateTime(profile.DesiredDate.Year, 12, 25)));
 			//misc
+			if(profile.Pets > 0) {
+				payments.Add(new UncertainInputPayment("Pet Supplies", new Description("Buy pet supplies. Be realistic when writing correct costs."), "Pets", Frequency.MONTHLY_DAY, 1, 1, profile.DesiredDate, rand));
+				for(int i = 0; i < profile.Pets; i++)
+					payments.Add(new UncertainRandomPayment("Pet Physical", new Description("Take your pet in for a physical."), "Pets", Frequency.YEARLY, 85.25m, 140.25m, rand, 1, 1, profile.DesiredDate));
+				payments.Add(new UncertainRandomPayment("Pet Emergency", new Description("Your pet requires emergency care."), "Pets", Frequency.YEARLY, 245.25m, 430.25m, rand, 1, 1, profile.DesiredDate));
+            }
 			//TODO
 			return payments;
 		}

@@ -20,6 +20,8 @@ namespace FinanceSim {
 		private NumberFormatInfo formatInfo;
 		private int highlightedIndex;
 		private Brush prevColor;
+		private decimal maxSpending;
+		private decimal spendingMoney;
 		private bool doneLoading;
 		//constructors
 		internal DataView(MainWindow parent) {
@@ -30,6 +32,7 @@ namespace FinanceSim {
 			formatInfo.CurrencyNegativePattern = 1;
 			highlightedIndex = -1;
 			prevColor = null;
+			spendingMoney = maxSpending = 0m;
 			doneLoading = false;
 		}
 		//methods
@@ -91,6 +94,7 @@ namespace FinanceSim {
 			payments = PaymentManager.GeneratePayments(profile);
 			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
 			money = 0m;
+			spendingMoney = maxSpending = profile.Spending;
 			AdjustCalendar();
 			DoExpenses(true);
 		}
@@ -111,6 +115,8 @@ namespace FinanceSim {
 				DockPanel.SetDock(vp, Dock.Top);
 				expensesPanel.Children.Add(vp);
 				money += vp.Bill;
+				if (vp.IsSpending)
+					spendingMoney += vp.Bill;
 			}
 			if(vPays.Count == 0) {
 				Label ne = new Label();
@@ -119,10 +125,12 @@ namespace FinanceSim {
 				expensesPanel.Children.Add(ne);
             }
 			moneyLabel.Content = "Balance: " + money.ToString("C", formatInfo);
+			spendingLabel.Content = "Spending money:" + spendingMoney.ToString("C", formatInfo);
 			if(!first)
 				highlightedIndex++;
 			if(highlightedIndex == calendarGrid.Children.Count) {
 				AdjustCalendar();
+				spendingMoney = maxSpending;
 				ColorToday(false);
 			}
 			else
@@ -168,9 +176,11 @@ namespace FinanceSim {
 	class ViewablePayment : Label {
 		//members
 		private decimal bill;
+		private bool isSpending;
 		//constructors
 		internal ViewablePayment(Payment payment, DateTime date, bool color, NumberFormatInfo formatInfo) {
 			bill = payment.GetPayment(date);
+			isSpending = payment.Category.Equals("Spending Money");
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			HorizontalContentAlignment = HorizontalAlignment.Stretch;
 			Background = color ? Brushes.LightGray : Brushes.White;
@@ -189,7 +199,12 @@ namespace FinanceSim {
 			dp.Children.Add(cost);
 			dp.Children.Add(title);
 			DockPanel.SetDock(dp, Dock.Top);
-
+			if (isSpending) {
+				Label spendLabel = new Label();
+				spendLabel.Content = "Uses Spending Money";
+				spendLabel.Foreground = Brushes.Blue;
+				dp.Children.Add(spendLabel);
+			}
 			Label cate = new Label();
 			cate.Content = payment.Category;
 			cate.HorizontalContentAlignment = HorizontalAlignment.Right;
@@ -214,5 +229,6 @@ namespace FinanceSim {
 		}
 		//properties
 		internal decimal Bill { get { return bill; } }
+		internal bool IsSpending { get { return isSpending; } }
 	}
 }
