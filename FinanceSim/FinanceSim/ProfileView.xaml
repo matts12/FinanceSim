@@ -97,9 +97,9 @@
                 </GroupBox>
                 <GroupBox Header="Spending Habits">
                     <UniformGrid Rows="2" Columns="4">
-                        <Label>Days between snacking:</Label>
+                        <Label>Snacking days per week:</Label>
                         <TextBox Height="20" VerticalAlignment="Top" Name="snackFreqIn" LostFocus="Number_LostFocus"/>
-                        <Label>Days between coffee:</Label>
+                        <Label>Coffee days per week:</Label>
                         <TextBox Height="20" VerticalAlignment="Top" Name="coffeeFreqIn" LostFocus="Number_LostFocus"/>
                         <StackPanel>
                             <Label>Digital stuff:</Label>

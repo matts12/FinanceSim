@@ -61,12 +61,12 @@ namespace FinanceSim {
 				"Get a snack to make your hunger go away.",
 				"Treat yourself to a yummy snack",
 				"Time for a snack!"
-				), "Food", Frequency.WEEKLY, 1m, 3.95m, rand, profile.SnackFreq / 2, profile.SnackFreq, profile.DesiredDate));
+				), "Food", Frequency.WEEKLY, 1m, 3.95m, rand, profile.SnackFreq, profile.SnackFreq, profile.DesiredDate));
 			payments.Add(new UncertainRandomPayment("Coffee", new Description(
 				(payment, max) => payment > 2.1m ? 0 : 1,
                 "Yum! Coffee and a morning treat!",
 				"Start the day with some coffee."
-				), "Food", Frequency.WEEKLY, 1.5m, 3.95m, rand, profile.CoffeeFreq / 2, profile.CoffeeFreq, profile.DesiredDate));
+				), "Food", Frequency.WEEKLY, 1.5m, 3.95m, rand, profile.CoffeeFreq, profile.CoffeeFreq, profile.DesiredDate));
 			//spending $
 			payments.Add(new UncertainRandomPayment("Random Spending", new Description("You used some of your spending money."), "Spending Money", Frequency.MONTHLY_DAY, 10m, ((profile.Spending - 40)/2 + profile.Spending)/4, rand, 3, 4, profile.DesiredDate));
 			payments.Add(new UncertainInputPayment("Digital Purchase", new Description("Buy an app, music, or a movie. Enter correct amount."), "Spending Money", Frequency.YEARLY, (int)(profile.Digitals * .9), (int)(profile.Digitals * 1.1), profile.DesiredDate, rand));

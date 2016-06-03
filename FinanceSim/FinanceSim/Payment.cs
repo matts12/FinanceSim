@@ -170,11 +170,12 @@ namespace FinanceSim {
 					throw new NotImplementedException();
 			}
 			for (int i = 0; i < randTimes.Length; i++) {
-				int r;
+				int r, k = 0;
 				do {
 					r = rand.Next(lowerBound, upperBound);
+					k++;
                 }
-				while (randTimes.Contains(r));
+				while (randTimes.Contains(r) && k < 9999);
 				randTimes[i] = r;
 			}
 			if (randTimes.Length > 1) {
