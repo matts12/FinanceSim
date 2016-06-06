@@ -15,13 +15,10 @@ namespace FinanceSim {
 		//members
 		private MainWindow parent;
 		private DateTime date;
-		private decimal money;
-		private List<Payment> payments;
+		private Profile currPro;
 		private NumberFormatInfo formatInfo;
 		private int highlightedIndex;
 		private Brush prevColor;
-		private decimal maxSpending;
-		private decimal spendingMoney;
 		private bool doneLoading;
 		//constructors
 		internal DataView(MainWindow parent) {
@@ -32,8 +29,8 @@ namespace FinanceSim {
 			formatInfo.CurrencyNegativePattern = 1;
 			highlightedIndex = -1;
 			prevColor = null;
-			spendingMoney = maxSpending = 0m;
 			doneLoading = false;
+			currPro = null;
 		}
 		//methods
 		private Label CreateCalendarDate(int day) {
@@ -66,12 +63,12 @@ namespace FinanceSim {
 			foreach(string s in dowNames)
 				calendarGrid.Children.Add(CreateTitleLabel(s));
             for (int i = 0; day <= monthDays; i++) {
-				if (i - (int)date.DayOfWeek == 0) {
+				if (i - ((int)date.DayOfWeek + date.Day - 1) == 0) {
 					highlightedIndex = 7 + i;
 				}
 				calendarGrid.Children.Add(i - (int)date.DayOfWeek >= 0 ? CreateCalendarDate(day++) : CreateEmptyDate());
 			}
-			foreach (Payment p in payments) {
+			foreach (Payment p in currPro.Payments) {
 				if(p is CertainFixedPayment || p is CertainMonthDepPayment || p is RelativeRandomPayment || p is CertainRandomPayment) {
 					for (int j = 0; j < monthDays; j++) {
 						DateTime dt = new DateTime(date.Year, date.Month, j + 1);
@@ -103,10 +100,8 @@ namespace FinanceSim {
 		}
 		internal void OpenProfile(Profile profile) {
 			profile.LastOpened = DateTime.Now;
-			payments = PaymentManager.GeneratePayments(profile);
-			date = new DateTime(profile.DesiredDate.Year, profile.DesiredDate.Month, 1);
-			money = 0m;
-			spendingMoney = maxSpending = profile.Spending;
+			currPro = profile;
+			date = profile.StopDate.AddDays(1);
 			AdjustCalendar();
 			DoExpenses(true);
 		}
@@ -126,11 +121,7 @@ namespace FinanceSim {
 				vp.FontSize = 14;
 				DockPanel.SetDock(vp, Dock.Top);
 				expensesPanel.Children.Add(vp);
-				money += vp.Bill;
-				if (vp.IsSpending) {
-					spendingMoney += vp.Bill;
-				}
-					
+				currPro.Balance += vp.Bill;
 			}
 			if(vPays.Count == 0) {
 				Label ne = new Label();
@@ -143,20 +134,17 @@ namespace FinanceSim {
 				highlightedIndex++;
 			if(highlightedIndex == calendarGrid.Children.Count) {
 				AdjustCalendar();
-				spendingMoney = maxSpending;
 				ColorToday(false);
 			}
 			else
 				ColorToday(!first);
-			moneyLabel.Content = money.ToString("C", formatInfo);
-			moneyLabel.Foreground = money > 0 ? Brushes.Green : Brushes.Red;
-			spendingLabel.Content = spendingMoney.ToString("C", formatInfo);
-			spendingLabel.Foreground = spendingMoney > 0 ? Brushes.Green : Brushes.Red;
+			moneyLabel.Content = currPro.Balance.ToString("C", formatInfo);
+			moneyLabel.Foreground = currPro.Balance > 0 ? Brushes.Green : Brushes.Red;
 		}
 		private List<ViewablePayment> GetExpenses() {
 			List<ViewablePayment> vPays = new List<ViewablePayment>();
 			bool color = false;
-			foreach(Payment p in payments) {
+			foreach(Payment p in currPro.Payments) {
 				if (p.IsDue(date)) {
 					vPays.Add(new ViewablePayment(p, date, color, formatInfo));
 					color = !color;
@@ -169,7 +157,8 @@ namespace FinanceSim {
 			DoExpenses(false);
 		}
 		private void backButton_Click(object sender, RoutedEventArgs e) {
-			parent.Return();
+			currPro.StopDate = date;
+			parent.ReturnAndSave();
 		}
 		private void calendarGrid_SizeChanged(object sender, SizeChangedEventArgs e) {
 			double width = calendarGrid.ActualWidth;
@@ -193,11 +182,9 @@ namespace FinanceSim {
 	class ViewablePayment : Label {
 		//members
 		private decimal bill;
-		private bool isSpending;
 		//constructors
 		internal ViewablePayment(Payment payment, DateTime date, bool color, NumberFormatInfo formatInfo) {
 			bill = payment.GetPayment(date);
-			isSpending = payment.Category.Equals("Spending Money");
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			HorizontalContentAlignment = HorizontalAlignment.Stretch;
 			Background = color ? Brushes.LightGray : Brushes.White;
@@ -218,7 +205,7 @@ namespace FinanceSim {
 			DockPanel.SetDock(dp, Dock.Top);
 			Label cate = new Label();
 			cate.Content = payment.Category;
-			cate.Foreground = isSpending ? Brushes.Blue : Brushes.Gray;
+			cate.Foreground = Brushes.Gray;
 			cate.HorizontalContentAlignment = HorizontalAlignment.Right;
 			DockPanel.SetDock(cate, Dock.Right);
 			TextBlock desc = new TextBlock();
@@ -242,6 +229,5 @@ namespace FinanceSim {
 		}
 		//properties
 		internal decimal Bill { get { return bill; } }
-		internal bool IsSpending { get { return isSpending; } }
 	}
 }

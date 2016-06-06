@@ -13,7 +13,7 @@
             <Label FontSize="52" Margin="5, 0, 0, 0" HorizontalContentAlignment="Center" FontWeight="Bold">Daily Expense Simulator</Label>
         </StackPanel>
         <Label FontSize="16" Margin="5, 0, 0, 0" DockPanel.Dock="Top" HorizontalContentAlignment="Center" Foreground="Gray">Made by Matt Spooner 2016</Label>
-        <Label FontSize="14" DockPanel.Dock="Top" HorizontalContentAlignment="Center" Foreground="Gray">Version 1.0.0</Label>
+        <Label FontSize="14" DockPanel.Dock="Top" HorizontalContentAlignment="Center" Foreground="Gray">Version 1.0.2</Label>
         <Rectangle DockPanel.Dock="Top" Fill="Black" Width="Auto" Height="1"></Rectangle>
         <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto">
             <DockPanel>

@@ -64,7 +64,7 @@ namespace FinanceSim {
 			switch (Freq) {
 				case Frequency.YEARLY: return (DateTime.IsLeapYear(day.Year) ? day.DayOfYear - 1 : day.DayOfYear) == (DateTime.IsLeapYear(refTime.Year) ? refTime.DayOfYear - 1 : refTime.DayOfYear);
 				case Frequency.MONTHLY_DAY: return day.Day == refTime.Day;
-				case Frequency.WEEKLY: Console.WriteLine(day.DayOfWeek + " " + refTime.DayOfWeek); return day.DayOfWeek == refTime.DayOfWeek;
+				case Frequency.WEEKLY: return day.DayOfWeek == refTime.DayOfWeek;
 				case Frequency.BI_MONTHLY: return day.DayOfWeek == refTime.DayOfWeek && day.Subtract(refTime).Days % 14 == 0;
 			}
 			return true;
@@ -93,7 +93,8 @@ namespace FinanceSim {
 			info.AddValue("payment", payment);
 		}
 	}
-	class CertainRandomPayment : CertainPayment {
+	[Serializable]
+	class CertainRandomPayment : CertainPayment, ISerializable {
 		//members
 		private decimal upper, lower;
 		private Random rand;
@@ -104,14 +105,26 @@ namespace FinanceSim {
 			this.lower = lower;
 			this.rand = rand;
 		}
+		internal CertainRandomPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			upper = info.GetDecimal("upper");
+			lower = info.GetDecimal("lower");
+			rand = info.GetValue("rand", typeof(Random)) as Random;
+		}
 		//properties
 		internal Random Rand { get { return rand; } }
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			return -1 * RandRange(lower, upper, rand);
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("upper", upper);
+			info.AddValue("lower", lower);
+			info.AddValue("rand", rand);
+		}
 	}
-	class CertainMonthDepPayment : CertainPayment {
+	[Serializable]
+	class CertainMonthDepPayment : CertainPayment, ISerializable {
 		//members
 		private Random rand;
 		private decimal[] monthPays;
@@ -123,14 +136,26 @@ namespace FinanceSim {
 			this.monthPays = monthPays;
 			this.variations = variations;
 		}
+		internal CertainMonthDepPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			monthPays = info.GetValue("monthPays", typeof(decimal[])) as decimal[];
+			variations = info.GetValue("variations", typeof(decimal[])) as decimal[];
+			rand = info.GetValue("rand", typeof(Random)) as Random;
+		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			decimal pBase = monthPays[day.Value.Month - 1];
 			decimal variation = variations[day.Value.Month - 1];
 			return -1 * RandRange(pBase - variation, pBase + variation, rand);
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("rand", rand);
+			info.AddValue("monthPays", monthPays);
+			info.AddValue("variations", variations);
+		}
 	}
-	abstract class UncertainPayment : Payment {
+	[Serializable]
+	abstract class UncertainPayment : Payment, ISerializable {
 		//members
 		private int[] randTimes;
 		private int currRand;
@@ -148,6 +173,15 @@ namespace FinanceSim {
 			this.maxTimes = maxTimes;
 			this.highAdj = highAdj;
 			RandomizeTimes(month);
+		}
+		internal UncertainPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			randTimes = info.GetValue("randTimes", typeof(int[])) as int[];
+			currRand = info.GetInt32("currRand");
+			rand = info.GetValue("rand", typeof(Random)) as Random;
+			needNewValues = info.GetBoolean("needNewValues");
+			highAdj = info.GetInt32("highAdj");
+			minTimes = info.GetInt32("minTimes");
+			maxTimes = info.GetInt32("maxTimes");
 		}
 		//properties
 		protected Random Rand { get { return rand; } }
@@ -207,7 +241,7 @@ namespace FinanceSim {
 			else {
 				bool isDue = false;
 				switch (Freq) {
-					case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; Console.WriteLine(day.DayOfYear + " " + randTimes[currRand]);  break;
+					case Frequency.YEARLY: isDue = day.DayOfYear == randTimes[currRand]; break;
 					case Frequency.MONTHLY_DAY: isDue = day.Day == randTimes[currRand]; break;
 					case Frequency.WEEKLY: isDue = (int)day.DayOfWeek == randTimes[currRand]; break;
 					case Frequency.BI_MONTHLY: throw new NotImplementedException();
@@ -223,8 +257,19 @@ namespace FinanceSim {
 				return isDue;
 			}
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("randTimes", randTimes);
+			info.AddValue("currRand", currRand);
+			info.AddValue("rand", rand);
+			info.AddValue("needNewValues", needNewValues);
+			info.AddValue("minTimes", minTimes);
+			info.AddValue("maxTimes", maxTimes);
+			info.AddValue("highAdj", highAdj);
+		}
 	}
-	class UncertainFixedPayment : UncertainPayment {
+	[Serializable]
+	class UncertainFixedPayment : UncertainPayment, ISerializable {
 		//members
 		private decimal payment;
 		//constructors
@@ -232,10 +277,18 @@ namespace FinanceSim {
 			int maxTimes, DateTime refTime, Random rand) : base(name, desc, category, freq, minTimes, maxTimes, refTime, rand, 0) {
 			this.payment = payment;
 		}
+		internal UncertainFixedPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			payment = info.GetDecimal("payment");
+		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) { return -payment; }
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("payment", payment);
+		}
 	}
-	class UncertainRandomPayment : UncertainPayment {
+	[Serializable]
+	class UncertainRandomPayment : UncertainPayment, ISerializable {
 		//members
 		private decimal upper, lower;
 		//constructors
@@ -244,12 +297,22 @@ namespace FinanceSim {
 			this.upper = upper;
 			this.lower = lower;
 		}
+		internal UncertainRandomPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			upper = info.GetDecimal("upper");
+			lower = info.GetDecimal("lower");
+		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			return -1 * RandRange(lower, upper, Rand);
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("upper", upper);
+			info.AddValue("lower", lower);
+		}
 	}
-	class UncertainInputPayment : UncertainPayment {
+	[Serializable]
+	class UncertainInputPayment : UncertainPayment, ISerializable {
 		//members
 		private decimal min, max;
 		//constructors
@@ -258,12 +321,22 @@ namespace FinanceSim {
 			this.min = min;
 			this.max = max;
 		}
+		internal UncertainInputPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			min = info.GetDecimal("min");
+			max = info.GetDecimal("max");
+		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			return new InputDialog().GetInput(this, Category.Equals("Spending Money"), min, max);
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("min", min);
+			info.AddValue("max", max);
+		}
 	}
-	class CertainInputPayment : CertainPayment {
+	[Serializable]
+	class CertainInputPayment : CertainPayment, ISerializable {
 		//members
 		private decimal min, max;
 		//constructors
@@ -272,12 +345,22 @@ namespace FinanceSim {
 			this.min = min;
 			this.max = max;
 		}
+		internal CertainInputPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			min = info.GetDecimal("min");
+			max = info.GetDecimal("max");
+		}
 		//methods
 		internal override decimal GetPayment(DateTime? day) {
 			return new InputDialog().GetInput(this, Category.Equals("Spending Money"), min, max);
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("min", min);
+			info.AddValue("max", max);
+		}
 	}
-	class RelativeRandomPayment : CertainRandomPayment {
+	[Serializable]
+	class RelativeRandomPayment : CertainRandomPayment, ISerializable {
 		//members
 		private int inBetweenMin, inBetweenMax;
 		private int inBe;
@@ -290,19 +373,31 @@ namespace FinanceSim {
 			inBe = Rand.Next(inBetweenMin, inBetweenMax);
 			lastTime = refTime;
         }
+		internal RelativeRandomPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			inBetweenMin = info.GetInt32("inBetweenMin");
+			inBetweenMax = info.GetInt32("inBetweenMax");
+			lastTime = info.GetDateTime("lastTime");
+			inBe = info.GetInt32("inBe");
+		}
 		//methods
 		internal override bool IsDue(DateTime day) {
 			bool due = day.Subtract(lastTime).Days % inBe == 0;
 			if (due) {
-				Console.WriteLine("due");
 				inBe = Rand.Next(inBetweenMin, inBetweenMax);
 				lastTime = day;
-				Console.WriteLine(inBe);
 			}
 			return due;
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("inBetweenMin", inBetweenMin);
+			info.AddValue("inBetweenMax", inBetweenMax);
+			info.AddValue("lastTime", lastTime);
+			info.AddValue("inBe", inBe);
+		}
 	}
-	class UncertainAlternatingPayment : UncertainPayment {
+	[Serializable]
+	class UncertainAlternatingPayment : UncertainPayment, ISerializable {
 		//members
 		private decimal[] oriPays;
 		private string[] oriDescs;
@@ -314,6 +409,12 @@ namespace FinanceSim {
 			oriPays = pays;
 			oriDescs = descs;
 			GenerateRandIndexes(times);
+		}
+		internal UncertainAlternatingPayment(SerializationInfo info, StreamingContext context) : base(info, context) {
+			oriPays = info.GetValue("oriPays", typeof(decimal[])) as decimal[];
+			oriDescs = info.GetValue("oriDescs", typeof(string[])) as string[];
+			chosens = info.GetValue("chosens", typeof(int[])) as int[];
+			curr = info.GetInt32("curr");
 		}
 		//methods
 		private void GenerateRandIndexes(int size) {
@@ -341,6 +442,13 @@ namespace FinanceSim {
 		internal override decimal GetPayment(DateTime? day) {
 			return -1 * oriPays[chosens[curr]];
 		}
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+			info.AddValue("oriPays", oriPays);
+			info.AddValue("oriDescs", oriDescs);
+			info.AddValue("chosens", chosens);
+			info.AddValue("curr", curr);
+		}
 	}
 	class DateComparer : IComparer<int> {
 		//members
@@ -359,39 +467,42 @@ namespace FinanceSim {
 			}
 			return x < level && y > level ? 1 : 0;
 		}
-		
 	}
+
 	public delegate int DescriptionSelector(decimal payment, int max);
 	[Serializable]
 	class Description : ISerializable {
+		internal enum SelectorType { NONE, RANDOM, COFFEE }
 		private static Random rand = new Random();
 		private static DescriptionSelector defSelect = (payment, max) => rand.Next(0, max);
+		private static DescriptionSelector coffeeSelect = (payment, max) => payment > 2.1m ? 0 : 1;
 		//members
 		private string[] descs;
-		private DescriptionSelector selector;
+		private SelectorType type;
 		//constructors
 		internal Description(string s){
 			descs = new string[] { s };
-			selector = null;
+			type = SelectorType.NONE;
 		}
 		internal Description(params string[] descs) {
 			this.descs = descs;
-			selector = defSelect;
+			type = SelectorType.RANDOM;
 		}
-		internal Description(DescriptionSelector selector, params string[] descs) {
+		internal Description(SelectorType st, params string[] descs) {
 			this.descs = descs;
-			this.selector = selector;
+			type = st;
 		}
 		public Description(SerializationInfo info, StreamingContext context) {
 			descs = info.GetValue("descs", typeof(string[])) as string[];
-			selector = null;
+			type = (SelectorType) info.GetInt32("type");
 		}
 		//methods
 		internal string GetValue(decimal payment) {
-			return descs[selector == null ? 0 : selector(payment, descs.Length - 1)];
+			return descs[type.Equals(SelectorType.NONE) ? 0 : (type.Equals(SelectorType.COFFEE) ? coffeeSelect(payment, descs.Length - 1) : defSelect(payment, descs.Length - 1))];
 		}
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("descs", descs);
+			info.AddValue("type", (int)type);
 		}
 	}
 }

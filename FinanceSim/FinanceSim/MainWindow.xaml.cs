@@ -63,7 +63,6 @@ namespace FinanceSim {
 		}
 		internal void ReturnAndSave() {
 			SaveProfiles();
-			titleView.OpenProfiles(profiles);
 			Return();
 		}
 		internal void Return() {

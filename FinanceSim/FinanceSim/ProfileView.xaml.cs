@@ -62,8 +62,6 @@ namespace FinanceSim {
 			rentIn.Background = Brushes.White;
 			collegeLoanIn.Text = "";
 			collegeLoanIn.Background = Brushes.White;
-			spendingIn.Text = "";
-			spendingIn.Background = Brushes.White;
 			//habits
 			snackFreqIn.Text = "";
 			snackFreqIn.Background = Brushes.White;
@@ -115,7 +113,6 @@ namespace FinanceSim {
 			petsIn.Text = profile.Pets.ToString();
 			rentIn.Text = profile.Rent.ToString("C");
 			collegeLoanIn.Text = profile.CollegeLoan.ToString("C");
-			spendingIn.Text = profile.Spending.ToString("C");
 			//habits
 			snackFreqIn.Text = profile.SnackFreq.ToString();
 			coffeeFreqIn.Text = profile.CoffeeFreq.ToString();
@@ -148,21 +145,24 @@ namespace FinanceSim {
 			profile.CarValue = decimal.Parse(carValueIn.Text, NumberStyles.Currency);
 			profile.GasRate = decimal.Parse(gasRateIn.Text, NumberStyles.Currency);
 			profile.MonthlyCarPayment = decimal.Parse(monthlyCarPaymentIn.Text, NumberStyles.Currency);
-			profile.CarMiles = int.Parse(carMilesIn.Text);
-			profile.MPG = int.Parse(mpgIn.Text);
-			profile.CarYears = int.Parse(carYearsIn.Text);
+			profile.CarMiles = int.Parse(carMilesIn.Text, NumberStyles.AllowThousands);
+			profile.MPG = int.Parse(mpgIn.Text, NumberStyles.AllowThousands);
+			profile.CarYears = int.Parse(carYearsIn.Text, NumberStyles.AllowThousands);
 			//misc
-			profile.Pets = int.Parse(petsIn.Text);
+			profile.Pets = int.Parse(petsIn.Text, NumberStyles.AllowThousands);
 			profile.Rent = decimal.Parse(rentIn.Text, NumberStyles.Currency);
 			profile.CollegeLoan = decimal.Parse(collegeLoanIn.Text, NumberStyles.Currency);
-			profile.Spending = decimal.Parse(spendingIn.Text, NumberStyles.Currency);
 			//habits
-			profile.SnackFreq = int.Parse(snackFreqIn.Text);
-			profile.CoffeeFreq = int.Parse(coffeeFreqIn.Text);
-			profile.Digitals = int.Parse(digitalsIn.Text);
+			profile.SnackFreq = int.Parse(snackFreqIn.Text, NumberStyles.AllowThousands);
+			profile.CoffeeFreq = int.Parse(coffeeFreqIn.Text, NumberStyles.AllowThousands);
+			profile.Digitals = int.Parse(digitalsIn.Text, NumberStyles.AllowThousands);
 			//other
 			profile.DesiredDate = desiredDateIn.SelectedDate.Value;
 			profile.ChallengeLevel = (int)challengeLevelIn.Value;
+
+			profile.Balance = 0m;
+			profile.StopDate = profile.DesiredDate;
+			profile.CreatePayments();
 		}
 		private List<CertainFixedPayment> GenerateOtherBills() {
 			List<CertainFixedPayment> bills = new List<CertainFixedPayment>();
@@ -192,8 +192,7 @@ namespace FinanceSim {
 			tb.Text = payment != null ? payment.Value.ToString("C") : "";
 			tb.LostFocus += Currency_LostFocus;
 			ug.Children.Add(tb);
-			//TODO UI
-			//TODO document
+
 			l = new Label();
 			l.Content = "Payment Day:";
 			ug.Children.Add(l);
@@ -211,7 +210,6 @@ namespace FinanceSim {
 				& ValidateCurrency(carValueIn) & ValidateNumber(carMilesIn) & ValidateCurrency(gasRateIn) //car
 				& ValidateNumber(mpgIn) & ValidateCurrency(monthlyCarPaymentIn) & ValidateNumber(carYearsIn)
 				& ValidateNumber(petsIn) & ValidateCurrency(rentIn) & ValidateCurrency(collegeLoanIn) //misc
-				& ValidateCurrency(spendingIn)
 				& ValidateNumber(snackFreqIn) & ValidateNumber(coffeeFreqIn) & ValidateNumber(digitalsIn) //habits
 				& ValidateDateTime(desiredDateIn); //other
 		}
@@ -238,7 +236,7 @@ namespace FinanceSim {
 		}
 		private bool ValidateNumber(TextBox tb) {
 			short result;
-			bool valid = short.TryParse(tb.Text, out result);
+			bool valid = short.TryParse(tb.Text, NumberStyles.AllowThousands, CultureInfo.CurrentCulture.NumberFormat, out result);
 			if (!valid) {
 				tb.Text = "";
 			}
@@ -276,14 +274,17 @@ namespace FinanceSim {
 		}
 		private void goButton_Click(object sender, RoutedEventArgs e) {
 			if (ValidateProfile()) {
-				CompleteProfile();
 				if (edit) {
-					parent.ReturnAndSave();
+					MessageBoxResult mbr = MessageBox.Show("Are you sure you want to start over with these new settings?", "Restart?", MessageBoxButton.YesNo);
+					if (mbr.Equals(MessageBoxResult.No)) {
+						return;
+					}
 				}
-				else {
+				CompleteProfile();
+				if (!edit) {
 					parent.AddProfile(profile);
-					parent.OpenProfile(profile);
 				}
+				parent.ReturnAndSave();
 			}
 		}
 		private void cancelButton_Click(object sender, RoutedEventArgs e) {

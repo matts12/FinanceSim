@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace FinanceSim {
 	public partial class TitleView : Page {
 		//members
 		private MainWindow parent;
+		private NumberFormatInfo formatInfo;
 		//constructors
 		public TitleView(MainWindow parent) {
             InitializeComponent();
@@ -25,6 +27,8 @@ namespace FinanceSim {
 			titleImg.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
 			   Properties.Resources.img.GetHbitmap(),
 			   IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(200, 200));
+			formatInfo = CultureInfo.CurrentCulture.NumberFormat.Clone() as NumberFormatInfo;
+			formatInfo.CurrencyNegativePattern = 1;
 		}
 		//methods
 		internal void OpenProfiles(List<Profile> profiles) {
@@ -62,15 +66,15 @@ namespace FinanceSim {
 			l.FontSize = 14;
 			l.VerticalContentAlignment = VerticalAlignment.Center;
 			l.HorizontalContentAlignment = HorizontalAlignment.Center;
-			l.Content = "Start Date: " + p.DesiredDate.ToString("M/dd/yy");
+			l.Content = "Start Date: " + p.DesiredDate.ToString("M/dd/yy") + "\nCurrent Date: " + p.StopDate.ToString("M/dd/yy");
 			ug.Children.Add(l);
 
 			l = new Label();
-			l.Foreground = Brushes.Green;
+			l.Foreground = p.Balance > 0 ? Brushes.Green : Brushes.Red;
 			l.FontSize = 14;
 			l.VerticalContentAlignment = VerticalAlignment.Center;
 			l.HorizontalContentAlignment = HorizontalAlignment.Center;
-			l.Content = "Income: " + p.BiPay.ToString("C");
+			l.Content = "Balance: " + p.Balance.ToString("C", formatInfo);
 			ug.Children.Add(l);
 
 			Button b = new Button();
@@ -82,7 +86,7 @@ namespace FinanceSim {
 
 			b = new Button();
 			b.Margin = new Thickness(15);
-			b.Content = "Edit";
+			b.Content = "Edit & Restart";
 			b.Name = "editButton_" + i;
 			b.Click += EditButton_Click;
 			ug.Children.Add(b);

@@ -34,7 +34,6 @@ namespace FinanceSim {
 		private int pets;
 		private decimal rent;
 		private decimal collegeLoan;
-		private decimal spending;
 		//habits
 		private int snackFreq;
 		private int coffeeFreq;
@@ -43,6 +42,10 @@ namespace FinanceSim {
 		private DateTime desiredDate;
 		private DateTime lastOpened;
 		private int challengeLevel;
+
+		private decimal balance;
+		private List<Payment> payments;
+		private DateTime stopDate;
 		//constructors
 		internal Profile() {
 			//personal
@@ -61,13 +64,16 @@ namespace FinanceSim {
 			carMiles = carYears = mpg = 0;
 			//misc
 			pets = 0;
-			rent = collegeLoan = spending = 0m;
+			rent = collegeLoan = 0m;
 			//habits
 			snackFreq = coffeeFreq = digitals = 0;
 			//other
 			desiredDate = DateTime.Today;
 			lastOpened = DateTime.Now;
-			challengeLevel = 0;
+			challengeLevel = 1;
+			balance = 0m;
+			payments = null;
+			stopDate = DateTime.Today;
 		}
 		internal Profile(SerializationInfo info, StreamingContext context) {
 			//personal
@@ -95,7 +101,6 @@ namespace FinanceSim {
 			pets = info.GetInt32("pets");
 			rent = info.GetDecimal("rent");
 			collegeLoan = info.GetDecimal("collegeLoan");
-			spending = info.GetDecimal("spending");
 			//habits
 			snackFreq = info.GetInt32("snackFreq");
 			coffeeFreq = info.GetInt32("coffeeFreq");
@@ -104,6 +109,9 @@ namespace FinanceSim {
 			desiredDate = info.GetDateTime("desiredDate");
 			lastOpened = info.GetDateTime("lastOpened");
 			challengeLevel = info.GetInt32("challengeLevel");
+			balance = info.GetDecimal("balance");
+			payments = info.GetValue("payments", typeof(List<Payment>)) as List<Payment>;
+			stopDate = info.GetDateTime("stopDate");
 		}
 		//properties
 		//personal
@@ -131,16 +139,23 @@ namespace FinanceSim {
 		internal int Pets { get { return pets; } set { pets = value; } }
 		internal decimal Rent { get { return rent; } set { rent = value; } }
 		internal decimal CollegeLoan { get { return collegeLoan; } set { collegeLoan = value; } }
-		internal decimal Spending { get { return spending; } set { spending = value; } }
 		//habits
 		internal int SnackFreq { get { return snackFreq; } set { snackFreq = value; } }
 		internal int CoffeeFreq { get { return coffeeFreq; } set { coffeeFreq = value; } }
 		internal int Digitals { get { return digitals; } set { digitals = value; } }
 		//other
-		internal DateTime DesiredDate { get { return desiredDate; } set { desiredDate = value; } }
+		internal DateTime DesiredDate { get { return desiredDate; } set {
+			desiredDate = new DateTime(value.Year, value.Month, 1);
+		} }
 		internal DateTime LastOpened { get { return lastOpened; } set { lastOpened = value; } }
 		internal int ChallengeLevel { get { return challengeLevel; } set { challengeLevel = value; } }
+		internal decimal Balance { get { return balance; } set { balance = value; } }
+		internal List<Payment> Payments { get { return payments; } }
+		internal DateTime StopDate { get { return stopDate; } set { stopDate = value; } }
 		//methods
+		internal void CreatePayments() {
+			payments = PaymentManager.GeneratePayments(this);
+		}
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {
 			//personal
 			info.AddValue("firstName", firstName);
@@ -167,7 +182,6 @@ namespace FinanceSim {
 			info.AddValue("pets", pets);
 			info.AddValue("rent", rent);
 			info.AddValue("collegeLoan", collegeLoan);
-			info.AddValue("spending", spending);
 			//habits
 			info.AddValue("snackFreq", snackFreq);
 			info.AddValue("coffeeFreq", coffeeFreq);
@@ -176,6 +190,9 @@ namespace FinanceSim {
 			info.AddValue("desiredDate", desiredDate);
 			info.AddValue("lastOpened", lastOpened);
 			info.AddValue("challengeLevel", challengeLevel);
+			info.AddValue("balance", balance);
+			info.AddValue("payments", payments);
+			info.AddValue("stopDate", stopDate);
 		}
 		public int CompareTo(Profile other) {
 			return lastOpened.CompareTo(other.lastOpened);

@@ -88,11 +88,6 @@
                             <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">Monthly payment towards college</TextBlock>
                         </StackPanel>
                         <TextBox Height="20" VerticalAlignment="Top" Name="collegeLoanIn" LostFocus="Currency_LostFocus"/>
-                        <StackPanel>
-                            <Label>Spending Money:</Label>
-                            <TextBlock MaxWidth="100" TextWrapping="WrapWithOverflow" FontStyle="Italic">Spare money per month. Your value must be approved by the teacher.</TextBlock>
-                        </StackPanel>
-                        <TextBox Height="20" VerticalAlignment="Top" Name="spendingIn" LostFocus="Currency_LostFocus"/>
                     </UniformGrid>
                 </GroupBox>
                 <GroupBox Header="Spending Habits">

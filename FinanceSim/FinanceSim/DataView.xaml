@@ -30,8 +30,6 @@
                 </Button>
                 <Label DockPanel.Dock="Top" FontSize="18" HorizontalContentAlignment="Center">Current Balance</Label>
                 <Label DockPanel.Dock="Top" FontWeight="ExtraBlack" FontFamily="Century Gothic" FontSize="18" Name="moneyLabel"/>
-                <Label DockPanel.Dock="Top" FontSize="18" HorizontalContentAlignment="Center">Spending Money</Label>
-                <Label DockPanel.Dock="Top" FontWeight="ExtraBlack" FontFamily="Century Gothic" FontSize="18" Name="spendingLabel"/>
                 <Button Name="backButton" FontSize="18" DockPanel.Dock="Bottom" Click="backButton_Click">Exit</Button>
                 <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden">
                     <UniformGrid DockPanel.Dock="Bottom" Name="calendarGrid" SizeChanged="calendarGrid_SizeChanged" Columns="7" Rows="6"/>
